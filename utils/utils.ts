@@ -176,7 +176,7 @@ function allowedOrientations(row: number, col: number, shipDim: number, grid: st
     return orientations;
 }
 
-
+/*
 // funzione che riporta nella leaderboard tutti i dati necessari sulla vittoria del giocatore
 export async function updateLeaderboardWin(email: string, logMoves: any): Promise<void> {
     let leaderboard: any;
@@ -213,6 +213,7 @@ export async function updateLeaderboardWin(email: string, logMoves: any): Promis
 
         if(leaderboard.avg_moves) {
             avgMoves = (leaderboard.avg_moves * leaderboard.wins + numMoves) / numMatchWin;
+            // da controllare
             stdDev = Math.sqrt((Math.pow(leaderboard.std_dev, 2) * numMatchWin + Math.pow(avgMoves - numMoves, 2)) / (numMatchWin + 1)); 
 
             if(numMoves < leaderboard.min_moves) minMoves = numMoves;
@@ -261,7 +262,6 @@ export async function updateLeaderboardLose(email: string, logMoves: any): Promi
             wins: 0,
             losses: 1,
             win_ratio: 0
-            
         });
     }
     else {
@@ -279,7 +279,7 @@ export async function updateLeaderboardLose(email: string, logMoves: any): Promi
         });
     }
 }
-
+*/
 
 export function exportAsJSON(logMoves: any, exportPath: string) {
     let logMovesJSON = JSON.stringify(logMoves);

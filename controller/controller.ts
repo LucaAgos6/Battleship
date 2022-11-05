@@ -2,6 +2,7 @@ import {Users, Game, Leaderboard} from '../model/models';
 import { ErrorEnum, getError, Success } from '../factory/factory';
 import * as Utils from '../utils/utils';
 import path from 'path';
+import * as SequelizeQueries from './sequelizeQueries'
 
 /**
 * Funzione che permette di verificare che l'utente esista data la sua email
@@ -121,7 +122,6 @@ export function showToken(email: string, res: any): void {
 export function updateToken(email: string, cost: number, res: any): void {
     getToken(email, res).then((token) => { 
         token = token - cost;
-        console.log(token)
         token = Math.round((token + Number.EPSILON) * 100) / 100;
         Users.update({ token: token }, { where: { email: email } });
         console.log("Remaining token: " + (token));
@@ -332,8 +332,8 @@ export async function createMove(email: string, id: string, move: any, res: any)
         game.loser = email2;
         msg = "Nave " + shipHit + " colpita ed affondata, hai vinto la partita"
 
-        Utils.updateLeaderboardWin(email, game.log_moves.moves);
-        Utils.updateLeaderboardLose(email2, game.log_moves.moves);
+        // Utils.updateLeaderboardWin(email, game.log_moves.moves);
+        // Utils.updateLeaderboardLose(email2, game.log_moves.moves);
     }
 
     try{
@@ -437,19 +437,29 @@ export async function getLog(id: string, exportPath: string, format: string, res
  * @param email -> player email
  * @param res -> response
  */
-export async function userStats(email: string, res: any): Promise<any> {
-    let leaderboard: any;
+export async function userStats(email: string, startDate: Date, endDate: Date, res: any): Promise<any> {
     let playerStats: any;
+    let totWins: number;
+    let totlose: number;
+    let totMatch: number;
+    let winRatio: number;
+    let logMoves: any;
 
-    leaderboard = await Leaderboard.findByPk(email, { raw: true });
+    console.log(startDate, endDate);
+
+    totWins = await SequelizeQueries.countWins(email, startDate, endDate);
+    totlose = await SequelizeQueries.countLose(email, startDate, endDate);
+    totMatch = totWins + totlose;
+    winRatio = totWins / totMatch;
+
+    logMoves = await SequelizeQueries.getLogMoves(email, startDate, endDate);
 
     playerStats = {
-        player: email,
-        total_match: leaderboard.total_matches,
-        total_win_match: leaderboard.wins,
-        total_lose_match: leaderboard.losses,
-        win_ratio: leaderboard.win_ratio,
-        average_moves: leaderboard.avg_moves
+        email: email,
+        total_match: totMatch,
+        total_wins: totWins,
+        total_loses: totlose,
+        win_ratio: winRatio 
     };
 
     res.send(playerStats);

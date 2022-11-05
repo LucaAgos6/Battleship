@@ -65,7 +65,7 @@ app.get('/game-log', Middleware_CoR.authentication, Middleware_CoR.gameLog, Midd
 *Rotta che permette di restituire lo storico delle mosse di una data partita
 */
 app.get('/user-stats', Middleware_CoR.authentication, Middleware_CoR.userStats, Middleware_CoR.catchError, (req: any, res:any) => {
-    Controller.userStats(req.bearer.email, res);
+    Controller.userStats(req.bearer.email, req.body.start_date, req.body.end_date, res);
 });
 
 
