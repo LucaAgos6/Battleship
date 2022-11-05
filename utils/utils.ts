@@ -1,5 +1,6 @@
 import { Leaderboard } from "../model/models";
-
+const path = require('node:path');
+const fs = require('fs');
 
 // funzione che inizializza le griglie dei giocatori
 export function gridInitialize(gridDim: number) {
@@ -253,4 +254,28 @@ export async function updateLeaderboardLose(email: string, logMoves: any): Promi
             where: { email: email }
         });
     }
+}
+
+
+export function exportAsJSON(logMoves: any, exportPath: string) {
+    var filename = 'logMoves.json'
+    exportPath = "C:/Users/deeps/Battleship";
+
+    exportPath = path.join(exportPath, filename)
+
+    logMoves = {
+        "moves":[
+            {"player":"admin@mail.it","row":1,"col":2},
+            {"player":"user1@mail.it","row":2,"col":0},
+            {"player":"admin@mail.it","row":0,"col":2}
+        ]
+    };
+
+    let logMovesJSON = JSON.stringify(logMoves);
+
+    fs.writeFile(exportPath, logMovesJSON, 'utf8', (err) => {
+        if (err) throw err;
+        console.log('Game\'s log exported succesfully to: ', exportPath);
+    });
+
 }
