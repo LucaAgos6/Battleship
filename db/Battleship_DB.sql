@@ -29,9 +29,9 @@ CREATE TABLE leaderboard(
     losses INT CHECK (losses >= 0),
     win_ratio REAL CHECK (win_ratio >= 0 AND win_ratio <= 1),
     avg_moves REAL CHECK (avg_moves >= 0),
-	max_moves INT CHECK (max_move >= 1),
-	min_moves INT CHECK (min_move >= 1),
-	std_dev REAL CHECK (standard_deviation >= 0)
+    max_moves INT CHECK (max_moves >= 1),
+    min_moves INT CHECK (min_moves >= 1),
+    std_dev REAL CHECK (std_dev >= 0)
 );
 
 INSERT INTO users (email, role, token) VALUES
