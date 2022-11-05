@@ -103,7 +103,15 @@ export const Leaderboard = sequelize.define('leaderboard', {
     },
     avg_moves: {
         type: DataTypes.REAL,
-        allowNull: false
+    },
+    max_moves: {
+        type: DataTypes.INTEGER,
+    },
+    min_moves: {
+        type: DataTypes.INTEGER,
+    },
+    std_dev: {
+        type: DataTypes.REAL,
     }
 },
 {

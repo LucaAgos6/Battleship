@@ -9,7 +9,7 @@ import { sequelize} from '../model/models';
 **/
 
 export async function getToken(email: string): Promise<any> {
-    let result = sequelize.query("SELECT token FROM users WHERE email = '" + email + "'",
+    let result = await sequelize.query("SELECT token FROM users WHERE email = '" + email + "'",
         {
             raw: true
         });
@@ -17,12 +17,40 @@ export async function getToken(email: string): Promise<any> {
 }
 
 
-export async function insertGame(player1: string, player2: string, gridDim: number, grid: string): Promise<any> {
-    const now: Date = new Date();
-    let result = sequelize.query("INSERT INTO game (player1, player2, game_status, player_turn, winner, loser, grid_dim, grids, log_moves, game_date) " +
-    "VALUES('" + player1 + "', '" + player2 + "', 'in progress', '" + player1 + "', '', '','" + gridDim + "', '" + grid + "', '" + grid + "', '" + now.toLocaleDateString() + "')",
+export async function countWins(email: string, startDate: Date, endDate: Date): Promise<number> {
+    let result: any;
+    result = await sequelize.query("SELECT COUNT(winner) FROM game WHERE game.winner = '" + email + "' AND game.game_date > '" + startDate + "' AND  game.game_date < '" + endDate + "'",
         {
             raw: true
         });
-    return result;
+    return result[1].rowCount;
 }
+
+
+export async function countLose(email: string, startDate: Date, endDate: Date): Promise<number> {
+    let result: any;
+    result = await sequelize.query("SELECT COUNT(loser) FROM game WHERE game.loser = '" + email + "' AND game.game_date > '" + startDate + "' AND  game.game_date < '" + endDate + "'",
+        {
+            raw: true
+        });
+    return result[1].rowCount;
+}
+
+
+export async function getLogMoves(email: string, startDate: Date, endDate: Date): Promise<any> {
+    let result: any;
+    result = await sequelize.query("SELECT log_moves FROM game WHERE game.winner = '" + email + "' AND game.game_date > '" + startDate + "' AND  game.game_date < '" + endDate + "'",
+        {
+            raw: true
+        });
+    let prova = result[0]
+
+    console.log(typeof(prova))
+
+    let prova2 = JSON.parse(prova);
+
+    console.log(typeof(prova2))
+
+    return 1;
+}
+
