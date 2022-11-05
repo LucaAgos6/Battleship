@@ -57,7 +57,7 @@ app.get('/game-state', Middleware_CoR.authentication, Middleware_CoR.gameState, 
 *Rotta che permette di restituire lo storico delle mosse di una data partita
 */
 app.get('/game-log', Middleware_CoR.authentication, Middleware_CoR.gameLog, Middleware_CoR.catchError, (req: any, res:any) => {
-    Controller.getLog(req.body.id, res);
+    Controller.getLog(req.body.id, req.body.path, req.body.format, res);
 });
 
 

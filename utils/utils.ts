@@ -1,3 +1,4 @@
+import test from "node:test";
 import { Leaderboard } from "../model/models";
 const path = require('node:path');
 const fs = require('fs');
@@ -212,7 +213,6 @@ export async function updateLeaderboardWin(email: string, logMoves: any): Promis
 
         if(leaderboard.avg_moves) {
             avgMoves = (leaderboard.avg_moves * leaderboard.wins + numMoves) / numMatchWin;
-            // dioporco agos master delle cazzo di formule
             stdDev = Math.sqrt((Math.pow(leaderboard.std_dev, 2) * numMatchWin + Math.pow(avgMoves - numMoves, 2)) / (numMatchWin + 1)); 
 
             if(numMoves < leaderboard.min_moves) minMoves = numMoves;
@@ -281,26 +281,30 @@ export async function updateLeaderboardLose(email: string, logMoves: any): Promi
 }
 
 
-
 export function exportAsJSON(logMoves: any, exportPath: string) {
-    var filename = 'logMoves.json'
-    exportPath = "C:/Users/deeps/Battleship";
-
-    exportPath = path.join(exportPath, filename)
-
-    logMoves = {
-        "moves":[
-            {"player":"admin@mail.it","row":1,"col":2},
-            {"player":"user1@mail.it","row":2,"col":0},
-            {"player":"admin@mail.it","row":0,"col":2}
-        ]
-    };
-
     let logMovesJSON = JSON.stringify(logMoves);
 
     fs.writeFile(exportPath, logMovesJSON, 'utf8', (err) => {
         if (err) throw err;
         console.log('Game\'s log exported succesfully to: ', exportPath);
     });
+}
 
+
+export function exportAsCSV(logMoves: any, exportPath: string) {
+    let headerLine: string = 'Player, Row, Col';
+    let moves = logMoves.moves;
+    moves.unshift(headerLine);
+
+    var logMovesCSV = moves.map(function(element){
+        if (element == moves[0]) return element;
+        return JSON.stringify(Object.values(element));
+    })
+    .join('\n')
+    .replace(/(^\[)|(\]$)/mg, '');
+    
+    fs.writeFile(exportPath, logMovesCSV, 'utf8', (err) => {
+        if (err) throw err;
+        console.log('Game\'s log exported succesfully to: ', exportPath);
+    });
 }

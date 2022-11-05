@@ -1,6 +1,7 @@
 import {Users, Game, Leaderboard} from '../model/models';
 import { ErrorEnum, getError, Success } from '../factory/factory';
-import * as Utils from '../utils/utils'
+import * as Utils from '../utils/utils';
+import path from 'path';
 
 /**
 * Funzione che permette di verificare che l'utente esista data la sua email
@@ -397,17 +398,31 @@ export async function getGame(id: string, res: any): Promise<any> {
 
 
 /**
-* Funzione che permette di recuperare il log di una data partita
-*
-* @param id -> id della partita
-* @param res -> risposta del server 
-*
-*/
-export async function getLog(id: string, res: any): Promise<any> {
+ * Return the moves log of a game
+ * @param id -> game id
+ * @param exportPath -> path to export to
+ * @param format -> desired export format
+ * @param res -> response
+ */
+export async function getLog(id: string, exportPath: string, format: string, res: any): Promise<any> {
     let game: any;
     let logMoves: any;
+    let filename: string;
 
     game = await Game.findByPk(id, { raw: true });
+
+    if (path) {
+        if (format === 'json') {
+            filename = 'Game-' + id + '_log.json';
+            exportPath = path.join(exportPath, filename)
+            Utils.exportAsJSON(game.log_moves, exportPath);
+        }
+        else if (format === 'csv') {
+            filename = 'Game-' + id + '_log.csv';
+            exportPath = path.join(exportPath, filename)
+            Utils.exportAsCSV(game.log_moves, exportPath);
+        }
+    }
 
     logMoves = {
         id: game.id,
@@ -418,12 +433,10 @@ export async function getLog(id: string, res: any): Promise<any> {
 }
 
 /**
-* Funzione che permette di recuperare le statistiche di un dato giocatore
-* 
-* @param email -> email del giocatore
-* @param res -> risposta del server 
-*
-*/
+ * Return the stats of a player
+ * @param email -> player email
+ * @param res -> response
+ */
 export async function userStats(email: string, res: any): Promise<any> {
     let leaderboard: any;
     let playerStats: any;
