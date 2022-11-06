@@ -1,4 +1,4 @@
-import * as express from 'express';
+import express from 'express';
 import * as Controller from '../controller/controller';
 import * as Middleware_CoR from '../middleware/middleware_CoR';
 import * as Middleware from '../middleware/middleware';
@@ -67,7 +67,6 @@ app.get('/game-log', Middleware_CoR.authentication, Middleware_CoR.gameLog, Midd
 app.get('/user-stats', Middleware_CoR.authentication, Middleware_CoR.userStats, Middleware_CoR.catchError, (req: any, res:any) => {
     Controller.userStats(req.bearer.email, req.body.start_date, req.body.end_date, res);
 });
-
 
 
 app.get('*', Middleware.routeNotFound, Middleware_CoR.catchError);

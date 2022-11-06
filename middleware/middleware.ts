@@ -315,10 +315,17 @@ export function checkGameExist(req: any, res: any, next: any): void {
 * @param next -> riferimento al middleware successivo
 *
 */
-export function checkLeaderboardExist(req: any, res: any, next: any): void {
-  Controller.checkLeaderboardExistByEmail(req.bearer.email).then((email) => {
-    if (email) next();
-    else next(ErrorEnum.ErrorPlayerStats, res);
-  })
+export function checkDate(req: any, res: any, next: any): void {
+  try {
+    let startDate = Date.parse(req.body.start_date);
+    let endDate = Date.parse(req.body.end_date);
+
+    console.log(startDate, endDate);
+    //if (startDate instanceof Date && endDate instanceof Date) next();
+  }
+  catch(error) {
+    console.log(error);
+    next(ErrorEnum.ErrorDateFormat, res);
+  }
 }
 

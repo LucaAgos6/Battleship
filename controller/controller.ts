@@ -441,25 +441,52 @@ export async function userStats(email: string, startDate: Date, endDate: Date, r
     let playerStats: any;
     let totWins: number;
     let totlose: number;
+    let logMoves: any;
     let totMatch: number;
     let winRatio: number;
-    let logMoves: any;
-
-    console.log(startDate, endDate);
+    let avgMoves: number;
+    let summation: number = 0;
+    let stdDev: number;
+    let totMoves: number;
+    let allMoves: number[] = [];
+    let countMoves: number;
 
     totWins = await SequelizeQueries.countWins(email, startDate, endDate);
     totlose = await SequelizeQueries.countLose(email, startDate, endDate);
-    totMatch = totWins + totlose;
-    winRatio = totWins / totMatch;
-
     logMoves = await SequelizeQueries.getLogMoves(email, startDate, endDate);
+
+    totMatch = totWins + totlose;
+    winRatio = Math.round((totWins / totMatch + Number.EPSILON) * 100) / 100;
+
+    for(let j = 0; j < logMoves.length; j++) {
+        countMoves = 0;
+
+        for(let k = 0; k < logMoves[j].moves.length; k++) {
+            if (logMoves[j].moves[k].player === email) countMoves = countMoves + 1;
+        }
+
+        allMoves.push(countMoves);
+    }
+
+    totMoves = allMoves.reduce((a, b) => a + b, 0);
+    avgMoves = Math.round((totMoves / totWins + Number.EPSILON) * 100) / 100;
+
+    for(let i = 0; i < allMoves.length; i++) {
+        summation = summation + Math.pow(avgMoves - allMoves[i], 2); 
+    }
+
+    stdDev = Math.round(Math.sqrt(summation / allMoves.length + Number.EPSILON) * 100) / 100;
 
     playerStats = {
         email: email,
         total_match: totMatch,
         total_wins: totWins,
         total_loses: totlose,
-        win_ratio: winRatio 
+        win_ratio: winRatio,
+        avg_moves: avgMoves,
+        min_moves: Math.min.apply(Math, allMoves),
+        max_moves: Math.max.apply(Math, allMoves),
+        standard_devation: stdDev
     };
 
     res.send(playerStats);

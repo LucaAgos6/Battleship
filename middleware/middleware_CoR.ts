@@ -56,6 +56,6 @@ export const gameLog = [
 ]
 
 export const userStats = [
-    Middleware.checkUserExist,
-    Middleware.checkLeaderboardExist
+    Middleware.checkUserExist
+    //Middleware.checkDate //da fare
 ]

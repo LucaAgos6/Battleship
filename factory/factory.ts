@@ -165,6 +165,15 @@ class ErrPlayerStats implements Msg {
     }
 }
 
+class ErrDateFormat implements Msg {
+    getMsg(): { status: number; msg: string; } {
+        return {
+            status: 402,
+            msg: "Error wrong date format"
+        }
+    }
+}
+
 
 /*
 * Enumerazione per identificare i diversi tipi di errore
@@ -186,7 +195,8 @@ export enum ErrorEnum {
     ErrorSamePlayer,
     ErrorMakeMove,
     ErrorIdGame,
-    ErrorPlayerStats
+    ErrorPlayerStats,
+    ErrorDateFormat
 }
 
 /** 
@@ -240,6 +250,9 @@ export function getError(type: ErrorEnum): Msg{
             break;
         case ErrorEnum.ErrorPlayerStats:
             val = new ErrPlayerStats;
+            break;
+        case ErrorEnum.ErrorDateFormat:
+            val = new ErrDateFormat;
             break;
         default: ErrorEnum.ErrorGeneral
             val = new ErrorGeneral();
