@@ -19,7 +19,7 @@ export async function getToken(email: string): Promise<any> {
 
 export async function countWins(email: string, startDate: Date, endDate: Date): Promise<number> {
     let result: any;
-    result = await sequelize.query("SELECT COUNT(winner) FROM game WHERE game.winner = '" + email + "' AND game.game_date > '" + startDate + "' AND  game.game_date < '" + endDate + "'",
+    result = await sequelize.query("SELECT COUNT(winner) FROM game WHERE game.winner = '" + email + "' AND game.game_date >= '" + startDate + "' AND  game.game_date <= '" + endDate + "'",
         {
             raw: true
         });
@@ -29,7 +29,7 @@ export async function countWins(email: string, startDate: Date, endDate: Date): 
 
 export async function countLose(email: string, startDate: Date, endDate: Date): Promise<number> {
     let result: any;
-    result = await sequelize.query("SELECT COUNT(loser) FROM game WHERE game.loser = '" + email + "' AND game.game_date > '" + startDate + "' AND  game.game_date < '" + endDate + "'",
+    result = await sequelize.query("SELECT COUNT(loser) FROM game WHERE game.loser = '" + email + "' AND game.game_date >= '" + startDate + "' AND  game.game_date <= '" + endDate + "'",
         {
             raw: true
         });
@@ -39,7 +39,7 @@ export async function countLose(email: string, startDate: Date, endDate: Date): 
 
 export async function getLogMoves(email: string, startDate: Date, endDate: Date): Promise<any> {
     let result: any;
-    result = await sequelize.query("SELECT log_moves FROM game WHERE game.winner = '" + email + "' AND game.game_date > '" + startDate + "' AND  game.game_date < '" + endDate + "'",
+    result = await sequelize.query("SELECT log_moves FROM game WHERE game.winner = '" + email + "' AND game.game_date >= '" + startDate + "' AND  game.game_date <= '" + endDate + "'",
         {
             raw: true
         });
