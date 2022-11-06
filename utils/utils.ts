@@ -3,7 +3,11 @@ import { Leaderboard } from "../model/models";
 const path = require('node:path');
 const fs = require('fs');
 
-// funzione che inizializza le griglie dei giocatori
+/**
+ * Initializes player's grids, creating an empty grid for each player
+ * @param gridDim 
+ * @returns 
+ */
 export function gridInitialize(gridDim: number) {
     type stringArray = {
         grid1: any[],
@@ -29,7 +33,13 @@ export function gridInitialize(gridDim: number) {
 }
 
 
-// funzione che pizza le navi sulle griglie dei giocatori
+/**
+ * Randomly place the ships on the grid of both players
+ * @param obj -> object containing the grids
+ * @param shipsConfig -> object containing ships configuration
+ * @param shipDims -> object containing ship's dimension for each type
+ * @returns -> return an object containing grids with ships
+ */
 export function arrangeShips(obj: any, shipsConfig: any, shipDims: any) {
     let grid1: any = obj.grid1;
     let grid2: any = obj.grid2;
@@ -55,14 +65,13 @@ export function arrangeShips(obj: any, shipsConfig: any, shipDims: any) {
 }
 
 
-/*
-* Funzione che:
-*        1) scegle rendomicamente una casella 
-*        2) check se la casella è vuota
-*        3) check sulle orientazioni possibili
-*        4) sceglie un'orientamento casuale
-*        5) piazza la nave
-*/
+/**
+ * Place a ship on the grid
+ * @param shipName -> ship name (i.e. A1, B2, B3 etc.)
+ * @param shipDim -> ship dimension in cell (i.e. 2 cells long, 3 cells, etc.)
+ * @param grid -> a (griDim x gridDim) matrix where the ship needs to be placed
+ * @returns 
+ */
 function placeShip(shipName: string, shipDim: number, grid: any) {
 
     let shipPlaced: boolean = false;
@@ -72,7 +81,7 @@ function placeShip(shipName: string, shipDim: number, grid: any) {
         let col: number = Math.floor(Math.random() * gridDim);
         let orientation: string = ''; 
         
-        // check se nella cella o nelle celle vicine c'è già un'altra nave (da aggiungere anche ad allowed orentation)
+        // check nearby ships (add to allowed orientations?)
         /*
         for (let j = 0; j < 3; j++) {
             for (let k = 0; k < 3; k++) {
@@ -83,12 +92,12 @@ function placeShip(shipName: string, shipDim: number, grid: any) {
         }
         */
 
-        // check se nella cella c'è già un'altra nave 
+        // check if the chosen cell is water (i.e. is free)
         if (grid[row][col] !== 'W') {
             continue;
         }
 
-        // se la dimensione della nave è 1 non serve l'orientamento
+        // if the ship dimension is 1 there's no need to choose an orientation
         if (shipDim !== 1) {
             var orientations: string[] = allowedOrientations(row, col, shipDim, grid);
             if (orientations.length == 0 ) {
@@ -97,7 +106,8 @@ function placeShip(shipName: string, shipDim: number, grid: any) {
             orientation = orientations[Math.floor(Math.random() * orientations.length)];
         }
 
-        // si posiziona la nave a seconda dell'orientamento scelto casualmente
+        // after picking a random orientation between the available ones,
+        // the ship get placed on the grid
         switch(orientation) {
             case 'up':
                 for (let i = 0; i < shipDim; i++) {
@@ -128,7 +138,7 @@ function placeShip(shipName: string, shipDim: number, grid: any) {
 }
 
 
-// funzione che fa un check sui possibili orientamenti della nave
+// check which orientations are available for the ship
 function allowedOrientations(row: number, col: number, shipDim: number, grid: string) {
     let orientations: string[] = [];
     let isAllowed: boolean = false;
@@ -281,29 +291,38 @@ export async function updateLeaderboardLose(email: string, logMoves: any): Promi
 }
 */
 
+/**
+ * Export the game log as a json file
+ * @param logMoves -> object containing the moves log
+ * @param exportPath -> exported file path
+ */
 export function exportAsJSON(logMoves: any, exportPath: string) {
     let logMovesJSON = JSON.stringify(logMoves);
 
-    fs.writeFile(exportPath, logMovesJSON, 'utf8', (err) => {
+    fs.writeFile(exportPath, logMovesJSON, 'utf8', (err: any) => {
         if (err) throw err;
         console.log('Game\'s log exported succesfully to: ', exportPath);
     });
 }
 
-
+/**
+ * Export the game log as a json file
+ * @param logMoves -> object containing the moves log
+ * @param exportPath -> exported file path
+ */
 export function exportAsCSV(logMoves: any, exportPath: string) {
     let headerLine: string = 'Player, Row, Col';
     let moves = logMoves.moves;
     moves.unshift(headerLine);
 
-    var logMovesCSV = moves.map(function(element){
+    var logMovesCSV = moves.map(function(element: any){
         if (element == moves[0]) return element;
         return JSON.stringify(Object.values(element));
     })
     .join('\n')
     .replace(/(^\[)|(\]$)/mg, '');
     
-    fs.writeFile(exportPath, logMovesCSV, 'utf8', (err) => {
+    fs.writeFile(exportPath, logMovesCSV, 'utf8', (err: any) => {
         if (err) throw err;
         console.log('Game\'s log exported succesfully to: ', exportPath);
     });
