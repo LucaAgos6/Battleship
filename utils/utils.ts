@@ -186,20 +186,13 @@ function allowedOrientations(row: number, col: number, shipDim: number, grid: st
     return orientations;
 }
 
-/*
+
 // funzione che riporta nella leaderboard tutti i dati necessari sulla vittoria del giocatore
-export async function updateLeaderboardWin(email: string, logMoves: any): Promise<void> {
+export async function updateLeaderboardWin(email: string): Promise<void> {
     let leaderboard: any;
-    let avgMoves: number;
-    let numMoves: number;
     let numMatch: number;
     let numMatchWin: number;
     let winRatio: number;
-    let minMoves: number;
-    let maxMoves:number;
-    let stdDev: number = 0;
-
-    numMoves = Math.round(logMoves.length / 2);
 
     leaderboard = await Leaderboard.findByPk(email);
 
@@ -210,10 +203,6 @@ export async function updateLeaderboardWin(email: string, logMoves: any): Promis
             wins: 1,
             losses: 0,
             win_ratio: 1,
-            avg_moves: numMoves,
-            max_moves: numMoves,
-            min_moves: numMoves,  
-            std_dev: stdDev
         });
     }
     else {
@@ -221,30 +210,10 @@ export async function updateLeaderboardWin(email: string, logMoves: any): Promis
         numMatchWin = leaderboard.wins + 1;
         winRatio = Math.round((numMatchWin/numMatch + Number.EPSILON) * 100) / 100;
 
-        if(leaderboard.avg_moves) {
-            avgMoves = (leaderboard.avg_moves * leaderboard.wins + numMoves) / numMatchWin;
-            // da controllare
-            stdDev = Math.sqrt((Math.pow(leaderboard.std_dev, 2) * numMatchWin + Math.pow(avgMoves - numMoves, 2)) / (numMatchWin + 1)); 
-
-            if(numMoves < leaderboard.min_moves) minMoves = numMoves;
-            else minMoves = leaderboard.min_moves;
-            if(numMoves > leaderboard.max_moves) maxMoves = numMoves;
-            else maxMoves = leaderboard.max_moves;
-        }
-        else {
-            avgMoves = numMoves,
-            minMoves = numMoves,
-            maxMoves = numMoves
-        }
-
         Leaderboard.update({
             total_matches: numMatch,
             wins: numMatchWin,
-            win_ratio: winRatio,
-            avg_moves: avgMoves,
-            min_moves: minMoves,
-            max_moves: maxMoves,
-            std_dev: stdDev
+            win_ratio: winRatio
         },
         {
             where: { email: email }
@@ -254,14 +223,11 @@ export async function updateLeaderboardWin(email: string, logMoves: any): Promis
 
 
 // funzione che riporta nella leaderboard tutti i dati necessari sulla sconfitta del giocatore
-export async function updateLeaderboardLose(email: string, logMoves: any): Promise<void> {
+export async function updateLeaderboardLose(email: string): Promise<void> {
     let leaderboard: any;
-    let numMoves: number;
     let numMatch: number;
     let numMatchLose: number;
     let winRatio: number;
-
-    numMoves = Math.round((logMoves.length - 1) / 2);
 
     leaderboard = await Leaderboard.findByPk(email);
 
@@ -282,14 +248,13 @@ export async function updateLeaderboardLose(email: string, logMoves: any): Promi
         Leaderboard.update({
             total_matches: numMatch,
             losses: numMatchLose,
-            win_ratio: winRatio,
+            win_ratio: winRatio
         },
         {
             where: { email: email }
         });
     }
 }
-*/
 
 /**
  * Export the game log as a json file

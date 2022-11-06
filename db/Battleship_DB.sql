@@ -27,11 +27,7 @@ CREATE TABLE leaderboard(
     total_matches INT CHECK(total_matches >= 0),
     wins INT CHECK (wins >= 0),
     losses INT CHECK (losses >= 0),
-    win_ratio REAL CHECK (win_ratio >= 0 AND win_ratio <= 1),
-    avg_moves REAL CHECK (avg_moves >= 0),
-    max_moves INT CHECK (max_moves >= 1),
-    min_moves INT CHECK (min_moves >= 1),
-    std_dev REAL CHECK (std_dev >= 0)
+    win_ratio REAL CHECK (win_ratio >= 0 AND win_ratio <= 1)
 );
 
 INSERT INTO users (email, role, token) VALUES
@@ -41,4 +37,5 @@ INSERT INTO users (email, role, token) VALUES
   ('user3@mail.it', 'user', 100),
   ('user4@mail.it', 'user', 100),
   ('user5@mail.it', 'user', 100),
-  ('user6@mail.it', 'user', 0);
+  ('user6@mail.it', 'user', 0),
+  ('AI', 'user', 0);

@@ -57,5 +57,9 @@ export const gameLog = [
 
 export const userStats = [
     Middleware.checkUserExist
-    //Middleware.checkDate //da fare
+    //Middleware.checkDate
+]
+
+export const leaderboard = [
+    Middleware.checkSortMethod
 ]

@@ -53,7 +53,7 @@ export function checkToken(req: any, res: any, next: any): void {
 *
 **/
 export function verifyAndAuthenticate(req: any, res: any, next: any): void {
-  let decoded = jwt.verify(req.token, process.env.SECRET_KEY); 
+  let decoded = jwt.verify(req.token, process.env.SECRET_KEY!); 
   if (decoded !== null)
     req.bearer = decoded;
   next();
@@ -254,10 +254,13 @@ export function checkUserGame(req: any, res: any, next: any,): void {
 **/
 export function checkOpponentGame(req: any, res: any, next: any): void {
   let player: string = "player2";
-  Controller.checkGameInProgress(req.body.player2, player).then((game) => {
-    if (!game) next();
-    else next(ErrorEnum.ErrorGameInProgress, res);
-  })
+  if (req.body.player2 == 'AI') next();
+  else {
+    Controller.checkGameInProgress(req.body.player2, player).then((game) => {
+      if (!game) next();
+      else next(ErrorEnum.ErrorGameInProgress, res);
+    });
+  }
 }
 
 
@@ -308,7 +311,7 @@ export function checkGameExist(req: any, res: any, next: any): void {
 
 
 /**
-* Funzione che si occupa di controllare se l'utente ha statistiche da mostrare
+* Funzione che si occupa di controllare se la data sia accettabile
 * 
 * @param req -> richiesta del client
 * @param res -> risposta da parte del server
@@ -317,11 +320,13 @@ export function checkGameExist(req: any, res: any, next: any): void {
 */
 export function checkDate(req: any, res: any, next: any): void {
   try {
-    let startDate = Date.parse(req.body.start_date);
-    let endDate = Date.parse(req.body.end_date);
+    let startDate = req.body.start_date;
 
-    console.log(startDate, endDate);
-    //if (startDate instanceof Date && endDate instanceof Date) next();
+    if (Object.prototype.toString.call(req.body.start_date) === '[object Date]' && !isNaN(req.body.start_date)) {
+      console.log("if :", startDate)
+      next();
+    }
+    else console.log("else :", startDate)
   }
   catch(error) {
     console.log(error);
@@ -329,3 +334,15 @@ export function checkDate(req: any, res: any, next: any): void {
   }
 }
 
+/**
+* Funzione che si occupa di controllare il sort sia corretto
+* 
+* @param req -> richiesta del client
+* @param res -> risposta da parte del server
+* @param next -> riferimento al middleware successivo
+*
+*/
+export function checkSortMethod(req: any, res: any, next: any): void {
+  if (req.body.sort === 'asc' || req.body.sort === 'desc') next();
+  else next(ErrorEnum.ErrorSortMethod, res);
+}

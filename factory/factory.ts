@@ -174,6 +174,15 @@ class ErrDateFormat implements Msg {
     }
 }
 
+class ErrSortMethod implements Msg {
+    getMsg(): { status: number; msg: string; } {
+        return {
+            status: 402,
+            msg: "Error invalid sort method"
+        }
+    }
+}
+
 
 /*
 * Enumerazione per identificare i diversi tipi di errore
@@ -196,7 +205,8 @@ export enum ErrorEnum {
     ErrorMakeMove,
     ErrorIdGame,
     ErrorPlayerStats,
-    ErrorDateFormat
+    ErrorDateFormat,
+    ErrorSortMethod
 }
 
 /** 
@@ -253,6 +263,9 @@ export function getError(type: ErrorEnum): Msg{
             break;
         case ErrorEnum.ErrorDateFormat:
             val = new ErrDateFormat;
+            break;
+        case ErrorEnum.ErrorSortMethod:
+            val = new ErrSortMethod;
             break;
         default: ErrorEnum.ErrorGeneral
             val = new ErrorGeneral();

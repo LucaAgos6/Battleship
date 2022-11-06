@@ -257,6 +257,7 @@ export async function createMove(email: string, id: string, move: any, res: any)
     let isShipSunk: boolean = true;
     let shipHit: string = 'O';
     let msg: string = 'Hai sparato in acqua';
+    let moveAllow: boolean = false;
 
     game = await Game.findByPk(id, { raw: true });
 
@@ -275,7 +276,7 @@ export async function createMove(email: string, id: string, move: any, res: any)
         playerTurn = game.player1;
     }
 
-    // Set the grid cell value: O means water hit, X means ship hit
+    // Set the grid cell value: 'O' means water hit, 'X' means ship hit
     if(grid[move.row][move.col] === 'W') {
         grid[move.row][move.col] = 'O';
     }
@@ -312,12 +313,12 @@ export async function createMove(email: string, id: string, move: any, res: any)
         game.loser = email2;
         msg = "Nave " + shipHit + " colpita ed affondata, hai vinto la partita"
 
-        // Utils.updateLeaderboardWin(email, game.log_moves.moves);
-        // Utils.updateLeaderboardLose(email2, game.log_moves.moves);
+        Utils.updateLeaderboardWin(email);
+        Utils.updateLeaderboardLose(email2);
     }
 
     try{
-        Game.update({
+        await Game.update({
             game_status: game.game_status,
             player_turn: playerTurn,
             grids: game.grids,
@@ -328,22 +329,40 @@ export async function createMove(email: string, id: string, move: any, res: any)
         { 
             where: {id: id} 
         });
-
-        res.status(200).json({
-            status: 200,
-            msg: msg,
-            game_stats: {
-                player1: email, 
-                player2: email2, 
-                game_status: game.game_status, 
-                player_turn: playerTurn, 
-                grid_dim: game.grid_dim, 
-                game_date: game.game_date
-            }
-        });
+    
+        if (1) {//2 res in output
+            res.status(200).json({
+                status: 200,
+                msg: msg,
+                game_stats: {
+                    player1: email, 
+                    player2: email2, 
+                    game_status: game.game_status, 
+                    player_turn: playerTurn, 
+                    grid_dim: game.grid_dim, 
+                    game_date: game.game_date
+                }
+            });
+        }
     }
     catch(error){
         controllerErrors(ErrorEnum.ErrServer, error, res);
+    }
+
+    if (playerTurn === 'AI' && isGameClosed !== true) {
+        while (moveAllow !== true) {
+            let row: number = Math.floor(Math.random() * game.grid_dim);
+            let col: number = Math.floor(Math.random() * game.grid_dim);
+
+            if (game.grids.grid2[row][col] !== 'X' && game.grids.grid2[row][col] !== 'O') moveAllow = true;
+        
+            move = {
+                "player": "AI",
+                "row": row,
+                "col": col
+            }
+        }
+        createMove(email2, id, move, res);
     }
 }
 
@@ -390,12 +409,12 @@ export async function getLog(id: string, exportPath: string, format: string, res
     game = await Game.findByPk(id, { raw: true });
 
     if (path) {
-        if (format === 'json') {
+        if (format === 'json' || format === 'JSON') {
             filename = 'Game-' + id + '_log.json';
             exportPath = path.join(exportPath, filename)
             Utils.exportAsJSON(game.log_moves, exportPath);
         }
-        else if (format === 'csv') {
+        else if (format === 'csv' || format === 'CSV') {
             filename = 'Game-' + id + '_log.csv';
             exportPath = path.join(exportPath, filename)
             Utils.exportAsCSV(game.log_moves, exportPath);
@@ -403,6 +422,8 @@ export async function getLog(id: string, exportPath: string, format: string, res
     }
 
     logMoves = {
+        status: 200,
+        msg: "File exported at :" + exportPath,
         id: game.id,
         log_moves: game.log_moves.moves
     };
@@ -468,4 +489,22 @@ export async function userStats(email: string, startDate: Date, endDate: Date, r
     };
 
     res.send(playerStats);
+}
+
+
+/**
+ * Return the leaderboard sort as request
+ * @param id -> game id
+ * @param res -> response
+ */
+ export async function showLeaderboard(sort: string, res: any): Promise<any> {
+    let leaderboard: any;
+
+    leaderboard = await SequelizeQueries.getLeaderboard(sort);
+
+    leaderboard = {
+        leaderboard: leaderboard
+    };
+
+    res.send(leaderboard);
 }
