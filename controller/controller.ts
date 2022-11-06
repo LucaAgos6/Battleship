@@ -69,7 +69,7 @@ export async function getToken(email: string, res: any): Promise<number> {
  * @param res -> risposta da parte del server
  *
  **/
- function controllerErrors(enum_error: ErrorEnum, err: Error, res: any): void {
+ function controllerErrors(enum_error: ErrorEnum, err: any, res: any): void {
     const new_err = getError(enum_error).getMsg();
     console.log(err);
     res.status(new_err.status).json({ error: new_err.status, message: new_err.msg });
@@ -260,14 +260,12 @@ export async function checkGameMoveById(email: string, id: string, row: number, 
 
 
 /**
-* Funzione che permette di effettuare una mossa e di salvarla nel Database 
-* 
-* @param email -> email del player che effettua la mossa
-* @param id -> id della partita in corso
-* @param move -> coordinate della mossa da eseguire
-* @param res -> risposta del server
-*
-*/
+ * Executes a player's move and save it to database, also checks if the game is over
+ * @param email -> player email
+ * @param id -> game id
+ * @param move -> move to be made (row, col)
+ * @param res -> response
+ */
 export async function createMove(email: string, id: string, move: any, res: any): Promise<void> {
     let game: any;
     let playerTurn: string;
@@ -280,10 +278,10 @@ export async function createMove(email: string, id: string, move: any, res: any)
 
     game = await Game.findByPk(id, { raw: true });
 
-    // append della mossa nel log
+    // append the current move to the moves log
     game.log_moves.moves.push(move);
 
-    // condizione in cui si vede se il player che fa la mossa è il player1 o il player2
+    // check if the player is making a move during is turn or not
     if(game.player1 === email) {
         grid = game.grids.grid1;
         email2 = game.player2;
@@ -295,7 +293,7 @@ export async function createMove(email: string, id: string, move: any, res: any)
         playerTurn = game.player1;
     }
 
-    // condizione in cui si associa un valore alla casella a seconda che il player abbia colpito una nave o l'acqua
+    // Set the grid cell value: O means water hit, X means ship hit
     if(grid[move.row][move.col] === 'W') {
         grid[move.row][move.col] = 'O';
     }
@@ -308,7 +306,7 @@ export async function createMove(email: string, id: string, move: any, res: any)
     if(game.player1 === email) game.grids.grid1 = grid;
     else game.grids.grid2 = grid;
 
-    // check se con la mossa fatta si affonda una nave e se si chiude la partita
+    // check if a ship has been sunk and the game is over
     for(let j = 0; j < game.grid_dim; j++) {
         for(let k = 0; k < game.grid_dim; k++) {
 
@@ -369,12 +367,10 @@ export async function createMove(email: string, id: string, move: any, res: any)
 
 
 /**
-* Funzione che permette di recuperare informazioni su una data partita
-* 
-* @param id -> id della partita da valutare
-* @param res -> risposta del server
-*
-*/
+ * Return the state of a game given the id
+ * @param id -> game id
+ * @param res -> response
+ */
 export async function getGame(id: string, res: any): Promise<any> {
     let game: any;
     let gameState: any;

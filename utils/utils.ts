@@ -284,7 +284,7 @@ export async function updateLeaderboardLose(email: string, logMoves: any): Promi
 export function exportAsJSON(logMoves: any, exportPath: string) {
     let logMovesJSON = JSON.stringify(logMoves);
 
-    fs.writeFile(exportPath, logMovesJSON, 'utf8', (err) => {
+    fs.writeFile(exportPath, logMovesJSON, 'utf8', (err: any) => {
         if (err) throw err;
         console.log('Game\'s log exported succesfully to: ', exportPath);
     });
@@ -296,14 +296,14 @@ export function exportAsCSV(logMoves: any, exportPath: string) {
     let moves = logMoves.moves;
     moves.unshift(headerLine);
 
-    var logMovesCSV = moves.map(function(element){
+    var logMovesCSV = moves.map(function(element: any){
         if (element == moves[0]) return element;
         return JSON.stringify(Object.values(element));
     })
     .join('\n')
     .replace(/(^\[)|(\]$)/mg, '');
     
-    fs.writeFile(exportPath, logMovesCSV, 'utf8', (err) => {
+    fs.writeFile(exportPath, logMovesCSV, 'utf8', (err: any) => {
         if (err) throw err;
         console.log('Game\'s log exported succesfully to: ', exportPath);
     });
