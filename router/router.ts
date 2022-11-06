@@ -12,7 +12,7 @@ app.get('/', function (req: any, res: any){
 
 
 /*
-*Rotta che consente di ricaricare i token di un utente
+* Route to refill a user's token
 */
 app.post('/refill', Middleware_CoR.authentication, Middleware_CoR.refill, Middleware_CoR.catchError, (req: any, res: any) => {
     Controller.refill(req.body.email, req.body.token, res);
@@ -20,9 +20,9 @@ app.post('/refill', Middleware_CoR.authentication, Middleware_CoR.refill, Middle
 
 
 /*
-*Rotta che consente di ritornare i token rimanenti di un utente
+* Route to show a user's token
 */
-app.post('/show-token', Middleware_CoR.authentication, Middleware_CoR.checkToken, Middleware_CoR.catchError, (req: any, res: any) => {//non richiesta dal prof
+app.post('/show-token', Middleware_CoR.authentication, Middleware_CoR.checkToken, Middleware_CoR.catchError, (req: any, res: any) => {
     Controller.showToken(req.bearer.email, res);
 });
 
@@ -67,7 +67,6 @@ app.get('/game-log', Middleware_CoR.authentication, Middleware_CoR.gameLog, Midd
 app.get('/user-stats', Middleware_CoR.authentication, Middleware_CoR.userStats, Middleware_CoR.catchError, (req: any, res:any) => {
     Controller.userStats(req.bearer.email, res);
 });
-
 
 
 app.get('*', Middleware.routeNotFound, Middleware_CoR.catchError);
