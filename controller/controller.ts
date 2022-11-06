@@ -5,13 +5,11 @@ import path from 'path';
 import * as SequelizeQueries from './sequelizeQueries'
 
 /**
-* Funzione che permette di verificare che l'utente esista data la sua email
-*
-* @param email -> email dell'utente
-* @param res -> risposta da parte del server
-* @returns true se esiste, false se non esiste
-*
-**/
+ * Returns true if the user exist in database, false otherwise
+ * @param email -> player email
+ * @param res -> response
+ * @returns -> true if user exist, false otherwise
+ */
 export async function checkUser(email: string, res: any): Promise<boolean> {
     let result: any;
     try {
@@ -23,14 +21,12 @@ export async function checkUser(email: string, res: any): Promise<boolean> {
 }
 
 
-/** 
-* Funzione che restituisce il ruolo dell'utente data la sua email
-*
-* @param email -> email dell'utente
-* @param res -> risposta da parte del server
-* @returns ruolo utente (admin/user)
-*
-**/
+/**
+ * Returns user role
+ * @param email -> user email
+ * @param res -> response
+ * @returns -> user role (admin/user)
+ */
 export async function getRole(email: string, res: any): Promise<string> {
     let result: any;
     try {
@@ -42,14 +38,12 @@ export async function getRole(email: string, res: any): Promise<string> {
 }
 
 
-/** 
-* Funzione che restituisce i token rimanenti dell'utente data la sua email
-*
-* @param email -> email utente
-* @param res -> risposta da parte del server
-* @returns token utente
-*
-**/
+/**
+ * Returns user remaining token
+ * @param email -> user email
+ * @param res -> response
+ * @returns -> user token
+ */
 export async function getToken(email: string, res: any): Promise<number> {
     let result: any;
     try {
@@ -62,13 +56,11 @@ export async function getToken(email: string, res: any): Promise<number> {
 
 
 /**
- * Funzione che viene richiamata dalle altre funzioni del Controller in caso di errori. 
- * 
- * @param enum_error -> enum che identifica il tipo di errore
- * @param err -> errore che si presenta
- * @param res -> risposta da parte del server
- *
- **/
+ * Returns the appropriate error
+ * @param enum_error -> error type
+ * @param err -> catched error
+ * @param res -> server response
+ */
  function controllerErrors(enum_error: ErrorEnum, err: any, res: any): void {
     const new_err = getError(enum_error).getMsg();
     console.log(err);
@@ -76,14 +68,12 @@ export async function getToken(email: string, res: any): Promise<number> {
 }
 
 
-/** 
-* Funzione che permette di ricaricare il credito dell'utente
-*
-* @param email -> email utente
-* @param token -> nuovo credito da inserire
-* @param res -> risposta da parte del server
-*
-**/
+/**
+ * Refill user's token
+ * @param email -> user email
+ * @param token -> token amount to refill
+ * @param res -> response
+ */
 export function refill(email: string, token: number, res: any): void {
     Users.update({ token: token }, { where: { email: email } })
         .then(() => {
@@ -96,13 +86,11 @@ export function refill(email: string, token: number, res: any): void {
 }
 
 
-/** 
-* Funzione che permette di mostrare i token rimanenti di un utente data la sua email
-*
-* @param email-> email utente
-* @param res -> risposta da parte del server
-*
-**/
+/**
+ * Returns user's token
+ * @param email -> user email
+ * @param res -> response
+ */
 export function showToken(email: string, res: any): void {
     Users.findByPk(email, { raw: true }).then((item: any) => {
         res.send("Remaining token: " + item.token)
@@ -112,13 +100,12 @@ export function showToken(email: string, res: any): void {
 }
 
 
-/** 
-* Funzione che permette di aggiornare il credito dell'utente a causa dell'inizio della partita
-*
-* @param email -> email utente
-* @param res -> risposta da parte del server
-*
-**/
+/**
+ * Update user's remaining tokens
+ * @param email -> user email
+ * @param cost -> amount of tokens to substract
+ * @param res -> response
+ */
 export function updateToken(email: string, cost: number, res: any): void {
     getToken(email, res).then((token) => { 
         token = token - cost;
@@ -132,18 +119,17 @@ export function updateToken(email: string, cost: number, res: any): void {
 
 
 /**
-* Funzione che permette di creare una nuova partita e salvarla nel Database
-*
-* @param email -> email del primo giocatore
-* @param player2 -> email del secondo giocatore
-* @param gridDim -> dimensione della griglia di gioco 
-* @param shipsConfig -> json contenente il numero di navi per ogni tipologia 
-* @param shipDims -> json contenente le caratteristiche delle navi
-*
-**/
+ * Create a new game on db
+ * @param player1 -> player1 email
+ * @param player2 -> player2 email
+ * @param gridDim -> grid dimension
+ * @param shipsConfig -> json containing the number and type of each ship
+ * @param shipDims -> ships' parameters (i.e. names and dimensions)
+ * @param res -> response
+ */
 export async function createGame(player1: string, player2: string, gridDim: number, shipsConfig: JSON, shipDims: JSON, res: any): Promise<void> {
     
-    // inizializzazione della griglia di gioco con le relative navi
+    // grid initializazion with random ships placement
     var grids: Object = Utils.gridInitialize(gridDim);
     grids = Utils.arrangeShips(grids, shipsConfig, shipDims);
 
@@ -183,12 +169,11 @@ export async function createGame(player1: string, player2: string, gridDim: numb
 
 
 /**
-* Funzione che vede nel Database se un utente ha già una partita iniziata
-* 
-* @param email -> email dell'utente da controllare
-* @returns true se esiste, false se non esiste
-*
-*/
+ * Check if a user has an ongoing game
+ * @param email -> user email
+ * @param player -> user email
+ * @returns 
+ */
 export async function checkGameInProgress(email: string, player: string): Promise<boolean> {
     let result: any;
     let status: string = 'in progress';
@@ -198,12 +183,10 @@ export async function checkGameInProgress(email: string, player: string): Promis
 
 
 /**
-* Funzione che vede nel Database se esiste una partita con l'id specifico
-* 
-* @param id -> id della partita da controllare
-* @returns true se esiste, false se non esiste
-*
-*/
+ * Check if a game exist in db given its id
+ * @param id -> game id
+ * @returns -> true if the game exist, false otherwise
+ */
 export async function checkGameExistById(id: string): Promise<boolean> {
     let result: any;
     result = await Game.findByPk(id, { raw: true });
@@ -212,12 +195,10 @@ export async function checkGameExistById(id: string): Promise<boolean> {
 
 
 /**
-* Funzione che vede nel Database se il giocatore ha concluso almeno una partita ed ha stats da mostrare
-* 
-* @param email -> email dell'utente da controllare
-* @returns true se esiste, false se non esiste
-*
-*/
+ * Check if a user is present in the leaderboard (i.e. he finished at least one match)
+ * @param email -> player email
+ * @returns -> true if the player is present in leaderboard, false otherwise
+ */
 export async function checkLeaderboardExistByEmail(email: string): Promise<boolean> {
     let result: any;
     result = await Leaderboard.findByPk(email, { raw: true });
@@ -226,29 +207,30 @@ export async function checkLeaderboardExistByEmail(email: string): Promise<boole
 
 
 /**
-* Funzione che vede nel Database se la mossa possa essere effettuata in una data partita
-* 
-* @param email -> email dell'utente da controllare
-* @returns true se esiste, false se non esiste
-*
-*/
+ * Given a game id, check if the move is allowed
+ * @param email -> player email
+ * @param id -> game id
+ * @param row -> row coordinate
+ * @param col -> col coordinate
+ * @returns -> true if the move is allowed, false otherwise
+ */
 export async function checkGameMoveById(email: string, id: string, row: number, col: number): Promise<boolean> {
     let game: any;
     let status: string = 'in progress';
 
     game = await Game.findOne({where: {id: id, game_status: status, player_turn: email}});
     
-    // se non trova la partita la mossa non si può fare
+    // if the game does not exist there's no need to check further
     if(!game) {
         return false;
     };
 
-    // check che le coordinate della mossa siano all'interno della griglia
+    // check if the move's coordinate are withing the game grid
     if(row < 0 || col < 0 || row >= game.grid_dim || col >= game.grid_dim) {
         return false;
     };
 
-    // check sul player e sulla mossa che non sia già stata fatta
+    // check if the move has already been made
     if(game.player1 === email && game.grids.grid1[row][col] !== 'X' && game.grids.grid1[row][col] !== 'O') {
         return true;
     }
