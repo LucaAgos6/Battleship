@@ -263,7 +263,7 @@ export async function createMove(email: string, id: string, move: any, res: any)
     // append the current move to the moves log
     game.log_moves.moves.push(move);
 
-    // check if the player is making a move during is turn or not
+    // check if the player is making a move during his turn or not
     if(game.player1 === email) {
         grid = game.grids.grid1;
         email2 = game.player2;
@@ -291,11 +291,9 @@ export async function createMove(email: string, id: string, move: any, res: any)
     // check if a ship has been sunk and the game is over
     for(let j = 0; j < game.grid_dim; j++) {
         for(let k = 0; k < game.grid_dim; k++) {
-
             if(grid[j][k] === shipHit) {
                 isShipSunk = false;
             }
-
             if(grid[j][k] !== 'X' && grid[j][k] !== 'O' && grid[j][k] !== 'W') {
                 isGameClosed = false;
             }

@@ -3,11 +3,6 @@ import { Utils } from 'sequelize/types';
 import { SmallIntegerDataType } from 'sequelize/types/data-types';
 import { sequelize} from '../model/models';
 
-/** 
-*query postgres utili in controller.ts, il loro utilizzo è lì esplicato 
-*
-*
-**/
 
 export async function getToken(email: string): Promise<any> {
     let result = await sequelize.query("SELECT token FROM users WHERE email = '" + email + "'",
