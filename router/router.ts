@@ -56,7 +56,7 @@ app.get('/game-state', Middleware_CoR.authentication, Middleware_CoR.gameState, 
 /*
 * Route that returns the game log containing all the moves made by players
 */
-app.get('/game-log', Middleware_CoR.authentication, Middleware_CoR.gameLog, Middleware_CoR.catchError, (req: any, res:any) => {
+app.get('/game-log', Middleware_CoR.authentication, Middleware_CoR.gameLog, Middleware_CoR.catchError, (req: any, res: any) => {
     Controller.getLog(req.body.id, req.body.path, req.body.format, res);
 });
 
@@ -64,8 +64,16 @@ app.get('/game-log', Middleware_CoR.authentication, Middleware_CoR.gameLog, Midd
 /*
 * Route to show a user's stats
 */
-app.get('/user-stats', Middleware_CoR.authentication, Middleware_CoR.userStats, Middleware_CoR.catchError, (req: any, res:any) => {
+app.get('/user-stats', Middleware_CoR.authentication, Middleware_CoR.userStats, Middleware_CoR.catchError, (req: any, res: any) => {
     Controller.userStats(req.bearer.email, req.body.start_date, req.body.end_date, res);
+});
+
+
+/*
+* Route to show leaderboard sorted by asc or desc
+*/
+app.get('/leaderboard', Middleware_CoR.leaderboard, Middleware_CoR.catchError, (req: any, res: any) => {
+    Controller.showLeaderboard(req.body.sort, res);
 });
 
 

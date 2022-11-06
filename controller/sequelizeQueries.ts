@@ -42,3 +42,13 @@ export async function getLogMoves(email: string, startDate: Date, endDate: Date)
     return (result[0]);
 }
 
+
+export async function getLeaderboard(sort: string): Promise<any> {
+    let result: any;
+    result = await sequelize.query("SELECT * FROM public.leaderboarD ORDER BY wins " + sort,
+        {
+            raw: true
+        });
+    return (result[0]);
+}
+
