@@ -1,6 +1,7 @@
 import * as jwt from 'jsonwebtoken';
 import {ErrorEnum, getError} from '../factory/factory';
 import * as Controller from '../controller/controller';
+import moment from 'moment';
 
 
 /**
@@ -331,20 +332,23 @@ export function checkPlayerTurn(req: any, res: any, next: any): void {
 *
 */
 export function checkDate(req: any, res: any, next: any): void {
-  try {
-    let startDate = req.body.start_date;
+  var dateFormats = ["AAAA-MM-DD", "MM-DD-AAAA", "AAAA/MM/DD", "MM/DD/AAAA"];
+  let startDate: string = req.body.start_date;
+  let endDate: string = req.body.end_date;
 
-    if (Object.prototype.toString.call(req.body.start_date) === '[object Date]' && !isNaN(req.body.start_date)) {
-      console.log("if :", startDate)
-      next();
-    }
-    else console.log("else :", startDate)
+  let isStarValid: boolean = moment(startDate, dateFormats, true).isValid();
+  let isEndValid: boolean = moment(endDate, dateFormats, true).isValid();
+
+  if (isStarValid && isEndValid && moment(endDate).isSameOrAfter(startDate)) {
+    console.log("Valid dates", startDate, endDate)
+    next();
   }
-  catch(error) {
-    console.log(error);
-    next(ErrorEnum.ErrorDateFormat, res);
+  else {
+  console.log("Invalid dates", startDate, endDate)
+  next(ErrorEnum.ErrorDateFormat, res);
   }
 }
+
 
 /**
 * Funzione che si occupa di controllare il sort sia corretto
