@@ -178,7 +178,7 @@ export function checkPayloadHeader(req: any, res: any, next: any): void {
 export function checkUserExist(req: any, res: any, next: any): void {
   Controller.checkUser(req.bearer.email, res).then((email) => {
     if (email) next();
-    else next(ErrorEnum.ErrUser, req.bearer.email);
+    else next(ErrorEnum.ErrUser);
   })
 }
 
@@ -194,7 +194,7 @@ export function checkUserExist(req: any, res: any, next: any): void {
 export function checkOpponentExist(req: any, res: any, next: any): void {
   Controller.checkUser(req.body.player2, res).then((player2) => {
     if (player2) next();
-    else next(ErrorEnum.ErrUser, req.body.player2);
+    else next(ErrorEnum.ErrUser);
   })
 }
   
@@ -240,7 +240,7 @@ export function checkUserGame(req: any, res: any, next: any,): void {
   let player: string = "player1";
   Controller.checkGameInProgress(req.bearer.email, player).then((game) => {
     if (!game) next();
-    else next(ErrorEnum.ErrorGameInProgress, res, req.bearer.email);
+    else next(ErrorEnum.ErrorGameInProgress, res);
   })
 }
 
@@ -259,7 +259,7 @@ export function checkOpponentGame(req: any, res: any, next: any): void {
   else {
     Controller.checkGameInProgress(req.body.player2, player).then((game) => {
       if (!game) next();
-      else next(ErrorEnum.ErrorGameInProgress, res, req.body.player2);
+      else next(ErrorEnum.ErrorGameInProgress, res);
     });
   }
 }
@@ -306,7 +306,7 @@ export function checkGameMove(req: any, res: any, next: any): void {
 export function checkGameExist(req: any, res: any, next: any): void {
   Controller.checkGameExistById(req.body.id).then((id) => {
     if (id) next();
-    else next(ErrorEnum.ErrorIdGame, res, req.body.id);
+    else next(ErrorEnum.ErrorIdGame, res);
   })
 }
 
