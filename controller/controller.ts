@@ -231,7 +231,7 @@ export async function checkGameMoveById(email: string, id: string, row: number, 
     let game: any;
     let status: string = 'in progress';
 
-    game = await Game.findOne({where: {id: id, game_status: status, player_turn: email}});
+    game = await Game.findOne({where: {id: id, game_status: status}});
     
     // if the game does not exist there's no need to check further
     if(!game) {
@@ -244,10 +244,10 @@ export async function checkGameMoveById(email: string, id: string, row: number, 
     };
 
     // check if the move has already been made
-    if(game.player1 === email && game.grids.grid1[row][col] !== 'X' && game.grids.grid1[row][col] !== 'O') {
+    if(game.player1 === email && game.grids.grid2[row][col] !== 'X' && game.grids.grid2[row][col] !== 'O') {
         return true;
     }
-    else if(game.player2 === email && game.grids.grid2[row][col] !== 'X' && game.grids.grid2[row][col] !== 'O') {
+    else if(game.player2 === email && game.grids.grid1[row][col] !== 'X' && game.grids.grid1[row][col] !== 'O') {
         return true;
     }
     else return false;
@@ -271,7 +271,6 @@ export async function createMove(email: string, id: string, move: any, res: any)
     let isShipSunk: boolean = true;
     let shipName: string = 'O';
     let msg: string = 'Hai sparato in acqua';
-    let moveAllow: boolean = false;
 
     game = await Game.findByPk(id, { raw: true });
 
@@ -335,59 +334,21 @@ export async function createMove(email: string, id: string, move: any, res: any)
         where: {id: id}
     });
 
-
-
-//     try{
-//         await Game.update({
-//             game_status: game.game_status,
-//             player_turn: playerTurn,
-//             grids: game.grids,
-//             winner: game.winner,
-//             loser: game.loser,
-//             log_moves: game.log_moves
-//         },
-//         { 
-//             where: {id: id} 
-//         });
-    
-//         if (1) {//2 res in output
-//             res.status(200).json({
-//                 status: 200,
-//                 msg: msg,
-//                 game_stats: {
-//                     player1: email, 
-//                     player2: email2, 
-//                     game_status: game.game_status, 
-//                     player_turn: playerTurn, 
-//                     grid_dim: game.grid_dim, 
-//                     game_date: game.game_date
-//                 }
-//             });
-//         }
-//     }
-//     catch(error){
-//         controllerErrors(ErrorEnum.ErrServer, error, res);
-//     }
-
-//     if (playerTurn === 'AI' && isGameClosed !== true) {
-//         while (moveAllow !== true) {
-//             let row: number = Math.floor(Math.random() * game.grid_dim);
-//             let col: number = Math.floor(Math.random() * game.grid_dim);
-
-//             if (game.grids.grid2[row][col] !== 'X' && game.grids.grid2[row][col] !== 'O') moveAllow = true;
-        
-//             move = {
-//                 "player": "AI",
-//                 "row": row,
-//                 "col": col
-//             }
-//         }
-//         createMove(email2, id, move, res);
-//     }
-// }
-
-
-
+    res.status(200).json({
+        status: 200,
+        msg: msg,
+        game_stats: {
+            player1: email, 
+            player2: opponentEmail, 
+            game_status: game.game_status, 
+            player_turn: playerTurn, 
+            grid_dim: game.grid_dim, 
+            game_date: game.game_date
+        }
+    });   
+    if (game.player2 === 'AI') {
+        Utils.executeAIMove(game)
+    }
 }
 
 /**
@@ -442,7 +403,6 @@ export async function getLog(id: string, exportPath: string, format: string, res
             Utils.exportAsCSV(game.log_moves, exportPath);
         }
     }
-
     logMoves = {
         status: 200,
         msg: "File exported at :" + exportPath,
@@ -484,7 +444,6 @@ export async function userStats(email: string, startDate: Date, endDate: Date, r
         for(let k = 0; k < logMoves[j].moves.length; k++) {
             if (logMoves[j].moves[k].player === email) countMoves = countMoves + 1;
         }
-
         allMoves.push(countMoves);
     }
 
@@ -519,10 +478,16 @@ export async function userStats(email: string, startDate: Date, endDate: Date, r
  */
 export async function showLeaderboard(sort: string, res: any): Promise<any> {
     let leaderboard: any;
+
     leaderboard = await SequelizeQueries.getLeaderboard(sort);
 
-    leaderboard = {
-        leaderboard: leaderboard
-    };
-    res.send(leaderboard);
+    if (!leaderboard) {
+        res.send('There is no player in leaderboard yet!');
+    }
+    else {
+        leaderboard = {
+            leaderboard: leaderboard
+        };
+        res.send(leaderboard);
+    }
 }

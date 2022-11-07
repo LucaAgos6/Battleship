@@ -1,5 +1,4 @@
-import test from "node:test";
-import { Leaderboard } from "../model/models";
+import {Game, Leaderboard} from '../model/models';
 const path = require('node:path');
 const fs = require('fs');
 
@@ -310,26 +309,63 @@ export function returnGridState(shipName: string, grid: any, gridDim: number) {
     return gridState
 }
 
-export function executeAIMove(grid: any, gridDim: number) {
+export function executeAIMove(game: any) {
+    let gridState: any;
+    let isGameClosed: boolean = true;
     let shipName: string = 'O';
     let allowedMove: boolean = false;
     let row: number = 0;
     let col: number = 0;
 
     while (allowedMove === false) {
-        row = Math.floor(Math.random() * gridDim);
-        col = Math.floor(Math.random() * gridDim);
+        row = Math.floor(Math.random() * game.grid_dim);
+        col = Math.floor(Math.random() * game.grid_dim);
 
-        if (grid[row][col] !== 'X') allowedMove = true;
+        if (game.grids.grid1[row][col] !== 'X' && game.grids.grid1[row][col] !== 'O') {
+            allowedMove = true;
+        }
     }
+
+    let move = {
+        "player": "AI",
+        "row": row,
+        "col": col
+    }
+
+    game.log_moves.moves.push(move);
 
     // Set the grid cell value: 'O' means water hit, 'X' means ship hit
-    if(grid[row][col] === 'W') {
-        grid[row][col] = 'O';
+    if(game.grids.grid1[row][col] === 'W') {
+        game.grids.grid1[row][col] = 'O';
     }
     else {
-        grid[row][col] = 'X';
+        shipName = game.grids.grid1[row][col];
+        game.grids.grid1[row][col] = 'X';
     }
 
-    return grid;
+    // check if a ship has been sunk and the game is over
+    gridState = returnGridState(shipName, game.grids.grid1, game.grid_dim);
+
+    isGameClosed = gridState.isGameClosed;
+
+    if(isGameClosed === true) {
+        game.game_status = 'closed';
+        game.winner = game.player2;
+        game.loser = game.player1;
+
+        updateLeaderboardWin(game.player2);
+        updateLeaderboardLose(game.player1);
+    }
+
+    Game.update({
+        game_status: game.game_status,
+        player_turn: game.player1,
+        grids: game.grids,
+        winner: game.winner,
+        loser: game.loser,
+        log_moves: game.log_moves
+    },
+    {
+        where: {id: game.id}
+    });
 }
