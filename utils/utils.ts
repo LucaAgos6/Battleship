@@ -292,3 +292,31 @@ export function exportAsCSV(logMoves: any, exportPath: string) {
         console.log('Game\'s log exported succesfully to: ', exportPath);
     });
 }
+
+/**
+ * Check if a ship has been sunk and check if the game is over
+ * @param shipHit 
+ * @param grid 
+ * @param gridDim 
+ * @returns 
+ */
+export function checkGridState(shipHit: string, grid: any, gridDim: number) {
+    let isGameClosed: boolean = true;
+    let isShipSunk: boolean = true;
+    let gameState: any = {
+        isShipSunk,
+        isGameClosed
+    };
+
+    for(let j = 0; j < gridDim; j++) {
+        for(let k = 0; k < gridDim; k++) {
+            if(grid[j][k] === shipHit) {
+                gameState.isShipSunk = false;
+            }
+            if(grid[j][k] !== 'X' && grid[j][k] !== 'O' && grid[j][k] !== 'W') {
+                gameState.isGameClosed = false;
+            }
+        }
+    }
+    return gameState
+}

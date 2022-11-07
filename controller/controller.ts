@@ -3,6 +3,7 @@ import { ErrorEnum, getError, Success } from '../factory/factory';
 import * as Utils from '../utils/utils';
 import path from 'path';
 import * as SequelizeQueries from './sequelizeQueries'
+import { gameState } from '../middleware/middleware_CoR';
 
 /**
  * Returns true if the user exist in database, false otherwise
@@ -250,6 +251,7 @@ export async function checkGameMoveById(email: string, id: string, row: number, 
  */
 export async function createMove(email: string, id: string, move: any, res: any): Promise<void> {
     let game: any;
+    let gameState: any;
     let playerTurn: string;
     let email2: string;
     let grid: any;
@@ -290,16 +292,10 @@ export async function createMove(email: string, id: string, move: any, res: any)
     else game.grids.grid2 = grid;
 
     // check if a ship has been sunk and the game is over
-    for(let j = 0; j < game.grid_dim; j++) {
-        for(let k = 0; k < game.grid_dim; k++) {
-            if(grid[j][k] === shipHit) {
-                isShipSunk = false;
-            }
-            if(grid[j][k] !== 'X' && grid[j][k] !== 'O' && grid[j][k] !== 'W') {
-                isGameClosed = false;
-            }
-        }
-    }
+    gameState = Utils.checkGridState(shipHit, grid, game.grid_dim);
+
+    isShipSunk = gameState.isShipSunk;
+    isGameClosed = gameState.isGameClosed;
 
     if(isShipSunk === true) {
         msg = "Nave " + shipHit + " colpita ed affondata";
