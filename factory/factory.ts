@@ -8,7 +8,7 @@
 **/
 
 interface Msg {
-    getMsg():{status: number, msg: string};
+    getMsg(msgParameter?: string):{status: number, msg: string};
 }
 
 class ErrTokenHeader implements Msg {
@@ -48,28 +48,28 @@ class ErrPayloadHeader implements Msg {
 }
 
 class ErrNotAdmin implements Msg {
-    getMsg(): { status: number; msg: string; } {
+    getMsg(msgParameter: string): { status: number; msg: string; } {
         return {
             status: 401,
-            msg: "User is not admin"
+            msg: "User: " + msgParameter + " is not admin"
         }
     }
 }
 
 class ErrCheckAdmin implements Msg {
-    getMsg(): { status: number; msg: string; } {
+    getMsg(msgParameter: string): { status: number; msg: string; } {
         return {
             status: 404,
-            msg: "Admin not found"
+            msg: "Admin: " + msgParameter + " not found"
         }
     }
 }
 
 class ErrUser implements Msg {
-    getMsg(): { status: number; msg: string; } {
+    getMsg(msgParameter: string): { status: number; msg: string; } {
         return {
             status: 404,
-            msg: "User not found"
+            msg: "User: " + msgParameter + " not found"
         }
     }
 }
@@ -78,7 +78,7 @@ class ErrInsufficientToken implements Msg {
     getMsg(): { status: number; msg: string; } {
         return {
             status: 401,
-            msg: "Unauthorized"
+            msg: "Unauthorized: not enough token"
         }
     }
 }
@@ -121,10 +121,10 @@ class ErrorGeneral implements Msg {
 
 
 class ErrGameInProgress implements Msg {
-    getMsg(): { status: number; msg: string; } {
+    getMsg(msgParameter: string): { status: number; msg: string; } {
         return {
             status: 402,
-            msg: "Error user playing another game"
+            msg: "Error: user " + msgParameter + " is playing another game"
         }
     }
 }
@@ -133,7 +133,7 @@ class ErrSamePlayer implements Msg {
     getMsg(): { status: number; msg: string; } {
         return {
             status: 402,
-            msg: "Error play against yourself"
+            msg: "Error: you can't play against yourself"
         }
     }
 }
@@ -142,25 +142,25 @@ class ErrMakeMove implements Msg {
     getMsg(): { status: number; msg: string; } {
         return {
             status: 402,
-            msg: "Error on player move"
+            msg: "Error: player move not allowed"
         }
     }
 }
 
 class ErrIdGame implements Msg {
-    getMsg(): { status: number; msg: string; } {
+    getMsg(msgParameter: string): { status: number; msg: string; } {
         return {
             status: 402,
-            msg: "Error game not exist"
+            msg: "Error: game " + msgParameter + " do not exist"
         }
     }
 }
 
 class ErrPlayerStats implements Msg {
-    getMsg(): { status: number; msg: string; } {
+    getMsg(msgParameter: string): { status: number; msg: string; } {
         return {
             status: 402,
-            msg: "Error no player stats"
+            msg: "Error: player " + msgParameter + " has no stats"
         }
     }
 }
@@ -169,7 +169,7 @@ class ErrDateFormat implements Msg {
     getMsg(): { status: number; msg: string; } {
         return {
             status: 402,
-            msg: "Error wrong date format"
+            msg: "Error: wrong date format"
         }
     }
 }
@@ -178,7 +178,16 @@ class ErrSortMethod implements Msg {
     getMsg(): { status: number; msg: string; } {
         return {
             status: 402,
-            msg: "Error invalid sort method"
+            msg: "Error: invalid sort method"
+        }
+    }
+}
+
+class ErrPlayerTurn implements Msg {
+    getMsg(): { status: number; msg: string; } {
+        return {
+            status: 402,
+            msg: "Error: it is not your turn!"
         }
     }
 }
@@ -206,7 +215,8 @@ export enum ErrorEnum {
     ErrorIdGame,
     ErrorPlayerStats,
     ErrorDateFormat,
-    ErrorSortMethod
+    ErrorSortMethod,
+    ErrorPlayerTrun
 }
 
 /** 
@@ -266,6 +276,9 @@ export function getError(type: ErrorEnum): Msg{
             break;
         case ErrorEnum.ErrorSortMethod:
             val = new ErrSortMethod;
+            break;
+        case ErrorEnum.ErrorPlayerTrun:
+            val = new ErrPlayerTurn;
             break;
         default: ErrorEnum.ErrorGeneral
             val = new ErrorGeneral();

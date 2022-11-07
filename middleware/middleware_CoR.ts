@@ -25,7 +25,7 @@ export const noAuthentication = [
     Middleware.checkJSONPayload
 ]
 
-export const checkToken = [//non richiesta dal prof
+export const checkToken = [
     Middleware.checkUserExist,
     Middleware.checkRemainingToken
 ]
@@ -42,6 +42,7 @@ export const beginMatch = [
 export const makeMove = [
     Middleware.checkUserExist,
     Middleware.checkGameExist,
+    Middleware.checkPlayerTurn,
     Middleware.checkGameMove
 ]
 

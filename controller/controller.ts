@@ -62,8 +62,8 @@ export async function getToken(email: string, res: any): Promise<number> {
  * @param err -> catched error
  * @param res -> server response
  */
- function controllerErrors(enum_error: ErrorEnum, err: any, res: any): void {
-    const new_err = getError(enum_error).getMsg();
+ function controllerErrors(enum_error: ErrorEnum, err: any, res: any, msgParameter?: string): void {
+    const new_err = getError(enum_error).getMsg(msgParameter);
     console.log(err);
     res.status(new_err.status).json({ error: new_err.status, message: new_err.msg });
 }
@@ -194,6 +194,18 @@ export async function checkGameExistById(id: string): Promise<boolean> {
     return result;
 }
 
+/**
+ * Check if the player attempting the move can do it
+ * @param id -> game id
+ * @param email -> user email
+ * @returns -> true if is the player turn, false otherwise
+ */
+export async function checkPlayerTurnById(id:string, email: string): Promise<boolean> {
+    let result: any;
+    result = await Game.findByPk(id, {raw: true});
+    if (result.player_turn === email) return true;
+    else return false;
+}
 
 /**
  * Check if a user is present in the leaderboard (i.e. he finished at least one match)
@@ -226,7 +238,7 @@ export async function checkGameMoveById(email: string, id: string, row: number, 
         return false;
     };
 
-    // check if the move's coordinate are withing the game grid
+    // check if the move's coordinate are within the game grid
     if(row < 0 || col < 0 || row >= game.grid_dim || col >= game.grid_dim) {
         return false;
     };
@@ -251,13 +263,13 @@ export async function checkGameMoveById(email: string, id: string, row: number, 
  */
 export async function createMove(email: string, id: string, move: any, res: any): Promise<void> {
     let game: any;
-    let gameState: any;
+    let gridState: any;
     let playerTurn: string;
-    let email2: string;
+    let opponentEmail: string;
     let grid: any;
     let isGameClosed: boolean = true;
     let isShipSunk: boolean = true;
-    let shipHit: string = 'O';
+    let shipName: string = 'O';
     let msg: string = 'Hai sparato in acqua';
     let moveAllow: boolean = false;
 
@@ -266,15 +278,15 @@ export async function createMove(email: string, id: string, move: any, res: any)
     // append the current move to the moves log
     game.log_moves.moves.push(move);
 
-    // check if the player is making a move during his turn or not
+    // set grid and player turn based on the email that is trying to execute the move
     if(game.player1 === email) {
-        grid = game.grids.grid1;
-        email2 = game.player2;
+        grid = game.grids.grid2;
+        opponentEmail = game.player2;
         playerTurn = game.player2;
     }
     else {
-        grid = game.grids.grid2;
-        email2 = game.player1;
+        grid = game.grids.grid1;
+        opponentEmail = game.player1;
         playerTurn = game.player1;
     }
 
@@ -283,83 +295,46 @@ export async function createMove(email: string, id: string, move: any, res: any)
         grid[move.row][move.col] = 'O';
     }
     else {
-        shipHit = grid[move.row][move.col];
+        shipName = grid[move.row][move.col];
         grid[move.row][move.col] = 'X';
-        msg = 'Hai colpito la nave ' + shipHit;
+        msg = 'Hai colpito la nave ' + shipName;
     }
 
-    if(game.player1 === email) game.grids.grid1 = grid;
-    else game.grids.grid2 = grid;
+    if(game.player1 === email) game.grids.grid2 = grid;
+    else game.grids.grid1 = grid;
 
     // check if a ship has been sunk and the game is over
-    gameState = Utils.checkGridState(shipHit, grid, game.grid_dim);
+    gridState = Utils.returnGridState(shipName, grid, game.grid_dim);
 
-    isShipSunk = gameState.isShipSunk;
-    isGameClosed = gameState.isGameClosed;
+    isShipSunk = gridState.isShipSunk;
+    isGameClosed = gridState.isGameClosed;
 
     if(isShipSunk === true) {
-        msg = "Nave " + shipHit + " colpita ed affondata";
+        msg = "Nave " + shipName + " colpita ed affondata";
     }
 
     if(isGameClosed === true) {
         game.game_status = 'closed';
         game.winner = email;
-        game.loser = email2;
-        msg = "Nave " + shipHit + " colpita ed affondata, hai vinto la partita"
+        game.loser = opponentEmail;
+        msg = "Nave " + shipName + " colpita ed affondata, hai vinto la partita"
 
         Utils.updateLeaderboardWin(email);
-        Utils.updateLeaderboardLose(email2);
+        Utils.updateLeaderboardLose(opponentEmail);
     }
 
-    try{
-        await Game.update({
-            game_status: game.game_status,
-            player_turn: playerTurn,
-            grids: game.grids,
-            winner: game.winner,
-            loser: game.loser,
-            log_moves: game.log_moves
-        },
-        { 
-            where: {id: id} 
-        });
-    
-        if (1) {//2 res in output
-            res.status(200).json({
-                status: 200,
-                msg: msg,
-                game_stats: {
-                    player1: email, 
-                    player2: email2, 
-                    game_status: game.game_status, 
-                    player_turn: playerTurn, 
-                    grid_dim: game.grid_dim, 
-                    game_date: game.game_date
-                }
-            });
-        }
-    }
-    catch(error){
-        controllerErrors(ErrorEnum.ErrServer, error, res);
-    }
-
-    if (playerTurn === 'AI' && isGameClosed !== true) {
-        while (moveAllow !== true) {
-            let row: number = Math.floor(Math.random() * game.grid_dim);
-            let col: number = Math.floor(Math.random() * game.grid_dim);
-
-            if (game.grids.grid2[row][col] !== 'X' && game.grids.grid2[row][col] !== 'O') moveAllow = true;
-        
-            move = {
-                "player": "AI",
-                "row": row,
-                "col": col
-            }
-        }
-        createMove(email2, id, move, res);
-    }
+    await Game.update({
+        game_status: game.game_status,
+        player_turn: playerTurn,
+        grids: game.grids,
+        winner: game.winner,
+        loser: game.loser,
+        log_moves: game.log_moves
+    },
+    {
+        where: {id: id}
+    });
 }
-
 
 /**
  * Return the state of a game given the id
@@ -383,7 +358,6 @@ export async function getGame(id: string, res: any): Promise<any> {
         grid_dim: game.grid_dim,
         game_date: game.game_date
     };
-
     res.send(gameState);
 }
 
@@ -421,7 +395,6 @@ export async function getLog(id: string, exportPath: string, format: string, res
         id: game.id,
         log_moves: game.log_moves.moves
     };
-
     res.send(logMoves);
 }
 
@@ -481,7 +454,6 @@ export async function userStats(email: string, startDate: Date, endDate: Date, r
         max_moves: Math.max.apply(Math, allMoves),
         standard_devation: stdDev
     };
-
     res.send(playerStats);
 }
 
@@ -491,14 +463,12 @@ export async function userStats(email: string, startDate: Date, endDate: Date, r
  * @param id -> game id
  * @param res -> response
  */
- export async function showLeaderboard(sort: string, res: any): Promise<any> {
+export async function showLeaderboard(sort: string, res: any): Promise<any> {
     let leaderboard: any;
-
     leaderboard = await SequelizeQueries.getLeaderboard(sort);
 
     leaderboard = {
         leaderboard: leaderboard
     };
-
     res.send(leaderboard);
 }

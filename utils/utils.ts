@@ -81,17 +81,6 @@ function placeShip(shipName: string, shipDim: number, grid: any) {
         let col: number = Math.floor(Math.random() * gridDim);
         let orientation: string = ''; 
         
-        // check nearby ships (add to allowed orientations?)
-        /*
-        for (let j = 0; j < 3; j++) {
-            for (let k = 0; k < 3; k++) {
-                if ((row-1+j) >= 0 && (row-1+j) < gridDim && (col-1+k) >= 0 && (col-1+k) < gridDim && grid[row-1+j][col-1+k] !== 'W') {
-                    continue loop;
-                }
-            }
-        }
-        */
-
         // check if the chosen cell is water (i.e. is free)
         if (grid[row][col] !== 'W') {
             continue;
@@ -300,23 +289,47 @@ export function exportAsCSV(logMoves: any, exportPath: string) {
  * @param gridDim 
  * @returns 
  */
-export function checkGridState(shipHit: string, grid: any, gridDim: number) {
+export function returnGridState(shipName: string, grid: any, gridDim: number) {
     let isGameClosed: boolean = true;
     let isShipSunk: boolean = true;
-    let gameState: any = {
+    let gridState: any = {
         isShipSunk,
         isGameClosed
     };
 
     for(let j = 0; j < gridDim; j++) {
         for(let k = 0; k < gridDim; k++) {
-            if(grid[j][k] === shipHit) {
-                gameState.isShipSunk = false;
+            if(grid[j][k] === shipName) {
+                gridState.isShipSunk = false;
             }
             if(grid[j][k] !== 'X' && grid[j][k] !== 'O' && grid[j][k] !== 'W') {
-                gameState.isGameClosed = false;
+                gridState.isGameClosed = false;
             }
         }
     }
-    return gameState
+    return gridState
+}
+
+export function executeAIMove(grid: any, gridDim: number) {
+    let shipName: string = 'O';
+    let allowedMove: boolean = false;
+    let row: number = 0;
+    let col: number = 0;
+
+    while (allowedMove === false) {
+        row = Math.floor(Math.random() * gridDim);
+        col = Math.floor(Math.random() * gridDim);
+
+        if (grid[row][col] !== 'X') allowedMove = true;
+    }
+
+    // Set the grid cell value: 'O' means water hit, 'X' means ship hit
+    if(grid[row][col] === 'W') {
+        grid[row][col] = 'O';
+    }
+    else {
+        grid[row][col] = 'X';
+    }
+
+    return grid;
 }
