@@ -130,7 +130,7 @@ export function checkJSONPayload(req: any, res: any, next: any): void {
 * @param next -> riferimento al middleware successivo
 *
 **/
-export function logErrors(err: any, req: any, res: any, next: any, msgParameter?: string): void {
+export function logErrors(err: any, req: any, res: any, next: any): void {
   const new_err = getError(err).getMsg();
   console.log(new_err);
   next(new_err);  
@@ -332,21 +332,17 @@ export function checkPlayerTurn(req: any, res: any, next: any): void {
 *
 */
 export function checkDate(req: any, res: any, next: any): void {
-  var dateFormats = ["AAAA-MM-DD", "MM-DD-AAAA", "AAAA/MM/DD", "MM/DD/AAAA"];
+  var dateFormats = ["YYYY-MM-DD", "MM-DD-YYYY", "YYYY/MM/DD", "MM/DD/YYYY"];
   let startDate: string = req.body.start_date;
   let endDate: string = req.body.end_date;
 
   let isStarValid: boolean = moment(startDate, dateFormats, true).isValid();
   let isEndValid: boolean = moment(endDate, dateFormats, true).isValid();
 
-  console.log(isStarValid, isEndValid)
-
   if (isStarValid && isEndValid && moment(endDate).isSameOrAfter(startDate)) {
-    console.log("Valid dates", startDate, endDate)
     next();
   }
   else {
-  console.log("Invalid dates", startDate, endDate)
   next(ErrorEnum.ErrorDateFormat, res);
   }
 }
