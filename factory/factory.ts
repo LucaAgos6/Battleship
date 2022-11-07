@@ -8,7 +8,7 @@
 **/
 
 interface Msg {
-    getMsg(msgParameter?: string):{status: number, msg: string};
+    getMsg():{status: number, msg: string};
 }
 
 class ErrTokenHeader implements Msg {
@@ -48,28 +48,28 @@ class ErrPayloadHeader implements Msg {
 }
 
 class ErrNotAdmin implements Msg {
-    getMsg(msgParameter: string): { status: number; msg: string; } {
+    getMsg(): { status: number; msg: string; } {
         return {
             status: 401,
-            msg: "User: " + msgParameter + " is not admin"
+            msg: "User is not admin"
         }
     }
 }
 
 class ErrCheckAdmin implements Msg {
-    getMsg(msgParameter: string): { status: number; msg: string; } {
+    getMsg(): { status: number; msg: string; } {
         return {
             status: 404,
-            msg: "Admin: " + msgParameter + " not found"
+            msg: "Admin not found"
         }
     }
 }
 
 class ErrUser implements Msg {
-    getMsg(msgParameter: string): { status: number; msg: string; } {
+    getMsg(): { status: number; msg: string; } {
         return {
             status: 404,
-            msg: "User: " + msgParameter + " not found"
+            msg: "User not found"
         }
     }
 }
@@ -121,10 +121,10 @@ class ErrorGeneral implements Msg {
 
 
 class ErrGameInProgress implements Msg {
-    getMsg(msgParameter: string): { status: number; msg: string; } {
+    getMsg(): { status: number; msg: string; } {
         return {
             status: 402,
-            msg: "Error: user " + msgParameter + " is playing another game"
+            msg: "Error: user is playing another game"
         }
     }
 }
@@ -148,19 +148,19 @@ class ErrMakeMove implements Msg {
 }
 
 class ErrIdGame implements Msg {
-    getMsg(msgParameter: string): { status: number; msg: string; } {
+    getMsg(): { status: number; msg: string; } {
         return {
             status: 402,
-            msg: "Error: game " + msgParameter + " do not exist"
+            msg: "Error: game do not exist"
         }
     }
 }
 
 class ErrPlayerStats implements Msg {
-    getMsg(msgParameter: string): { status: number; msg: string; } {
+    getMsg(): { status: number; msg: string; } {
         return {
             status: 402,
-            msg: "Error: player " + msgParameter + " has no stats"
+            msg: "Error: player has no stats"
         }
     }
 }

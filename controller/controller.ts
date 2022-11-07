@@ -63,7 +63,7 @@ export async function getToken(email: string, res: any): Promise<number> {
  * @param res -> server response
  */
  function controllerErrors(enum_error: ErrorEnum, err: any, res: any, msgParameter?: string): void {
-    const new_err = getError(enum_error).getMsg(msgParameter);
+    const new_err = getError(enum_error).getMsg();
     console.log(err);
     res.status(new_err.status).json({ error: new_err.status, message: new_err.msg });
 }

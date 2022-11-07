@@ -131,7 +131,7 @@ export function checkJSONPayload(req: any, res: any, next: any): void {
 *
 **/
 export function logErrors(err: any, req: any, res: any, next: any, msgParameter?: string): void {
-  const new_err = getError(err).getMsg(msgParameter);
+  const new_err = getError(err).getMsg();
   console.log(new_err);
   next(new_err);  
 }
@@ -338,6 +338,8 @@ export function checkDate(req: any, res: any, next: any): void {
 
   let isStarValid: boolean = moment(startDate, dateFormats, true).isValid();
   let isEndValid: boolean = moment(endDate, dateFormats, true).isValid();
+
+  console.log(isStarValid, isEndValid)
 
   if (isStarValid && isEndValid && moment(endDate).isSameOrAfter(startDate)) {
     console.log("Valid dates", startDate, endDate)
