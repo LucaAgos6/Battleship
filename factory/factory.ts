@@ -263,22 +263,22 @@ export function getError(type: ErrorEnum): Msg{
             val = new ErrSamePlayer();
             break;
         case ErrorEnum.ErrorMakeMove:
-            val = new ErrMakeMove;
+            val = new ErrMakeMove();
             break;
         case ErrorEnum.ErrorIdGame:
-            val = new ErrIdGame;
+            val = new ErrIdGame();
             break;
         case ErrorEnum.ErrorPlayerStats:
-            val = new ErrPlayerStats;
+            val = new ErrPlayerStats();
             break;
         case ErrorEnum.ErrorDateFormat:
-            val = new ErrDateFormat;
+            val = new ErrDateFormat();
             break;
         case ErrorEnum.ErrorSortMethod:
-            val = new ErrSortMethod;
+            val = new ErrSortMethod();
             break;
         case ErrorEnum.ErrorPlayerTrun:
-            val = new ErrPlayerTurn;
+            val = new ErrPlayerTurn();
             break;
         default: ErrorEnum.ErrorGeneral
             val = new ErrorGeneral();
