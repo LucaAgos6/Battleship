@@ -334,6 +334,60 @@ export async function createMove(email: string, id: string, move: any, res: any)
     {
         where: {id: id}
     });
+
+
+
+//     try{
+//         await Game.update({
+//             game_status: game.game_status,
+//             player_turn: playerTurn,
+//             grids: game.grids,
+//             winner: game.winner,
+//             loser: game.loser,
+//             log_moves: game.log_moves
+//         },
+//         { 
+//             where: {id: id} 
+//         });
+    
+//         if (1) {//2 res in output
+//             res.status(200).json({
+//                 status: 200,
+//                 msg: msg,
+//                 game_stats: {
+//                     player1: email, 
+//                     player2: email2, 
+//                     game_status: game.game_status, 
+//                     player_turn: playerTurn, 
+//                     grid_dim: game.grid_dim, 
+//                     game_date: game.game_date
+//                 }
+//             });
+//         }
+//     }
+//     catch(error){
+//         controllerErrors(ErrorEnum.ErrServer, error, res);
+//     }
+
+//     if (playerTurn === 'AI' && isGameClosed !== true) {
+//         while (moveAllow !== true) {
+//             let row: number = Math.floor(Math.random() * game.grid_dim);
+//             let col: number = Math.floor(Math.random() * game.grid_dim);
+
+//             if (game.grids.grid2[row][col] !== 'X' && game.grids.grid2[row][col] !== 'O') moveAllow = true;
+        
+//             move = {
+//                 "player": "AI",
+//                 "row": row,
+//                 "col": col
+//             }
+//         }
+//         createMove(email2, id, move, res);
+//     }
+// }
+
+
+
 }
 
 /**
