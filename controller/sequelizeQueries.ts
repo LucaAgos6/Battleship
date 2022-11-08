@@ -3,6 +3,11 @@ import { Utils } from 'sequelize/types';
 import { SmallIntegerDataType } from 'sequelize/types/data-types';
 import { sequelize} from '../model/models';
 
+/** 
+*query postgres utili in controller.ts, il loro utilizzo è lì esplicato 
+*
+*
+**/
 
 export async function getToken(email: string): Promise<any> {
     let result = await sequelize.query("SELECT token FROM users WHERE email = '" + email + "'",
@@ -45,7 +50,7 @@ export async function getLogMoves(email: string, startDate: Date, endDate: Date)
 
 export async function getLeaderboard(sort: string): Promise<any> {
     let result: any;
-    result = await sequelize.query("SELECT * FROM public.leaderboarD ORDER BY wins " + sort,
+    result = await sequelize.query("SELECT * FROM public.leaderboard ORDER BY wins " + sort + ", win_ratio " + sort,
         {
             raw: true
         });

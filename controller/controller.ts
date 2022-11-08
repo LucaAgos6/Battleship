@@ -346,7 +346,7 @@ export async function createMove(email: string, id: string, move: any, res: any)
             game_date: game.game_date
         }
     });   
-    if (game.player2 === 'AI') {
+    if (game.player2 === 'AI' && isGameClosed === false) {
         Utils.executeAIMove(game)
     }
 }
