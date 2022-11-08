@@ -1,28 +1,28 @@
 version: '3.7'
 services:
-    Battleship_DB:
+    dbpg:
         image: postgres
         restart: always
         environment:
-          - POSTGRES_DATABASE=Battleship
+          - POSTGRES_DATABASE=battleship
           - POSTGRES_USER=postgres
           - POSTGRES_PASSWORD=admin
         ports:
           - 5432:5432
         volumes:
-          - ./db/Battleship_DB.sql:/docker-entrypoint-initdb.d/Battleship_DB.sql        
+          - ./db/seed.sql:/docker-entrypoint-initdb.d/seed.sql        
     node:
         build: .
         restart: always
         ports:
           - 3000:3000
         environment:
-          - POSTGRES_DATABASE=Battleship
+          - POSTGRES_DATABASE=battleship
           - POSTGRES_USER=postgres
           - POSTGRES_PASSWORD=admin
-          - POSTGRES_HOST=Battleship_DB
+          - POSTGRES_HOST=dbpg
           - POSTGRES_PORT=5432
         env_file:
           - .env
         depends_on:
-          - Battleship_DB
+          - dbpg
