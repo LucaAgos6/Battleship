@@ -1,158 +1,288 @@
-# Battleship  (Progetto PA)
+# Battleship backend
 ## Descrizione del progetto
-backend
- 
+Il progetto consiste in sistema di backend che consenta di gestire il gioco della battaglia navale. Il sistema prevede la possibilità di far interagire due utenti (autenticati mediante JWT) o un utente contro l’elaboratore. 
+
+Sia la creazione di una partita e sia la mossa hanno un costo in termini di token.
+
 ## Funzioni del sistema
-<table align="center">
-    <thead>
-        <tr>
-            <th>Token</th>
-            <th>Funzioni</th>
-            <th>Ruolo</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr>
-            <td rowspan=6>senza token</td>
-            <td>Refill di un user con un certo credito</td>
-         <td>general</td>
-        </tr>
-        <tr>
-            <td>Mostra il credito rimasto di un utente</td>
-         <td>general</td>
-        </tr>
-        <tr>
-            <td>Mostra lo stato di una partita</td>
-         <td>general</td>
-        </tr>
-        <tr>
-            <td>Mostra il log delle mosse di una data partita</td>
-         <td>general</td>
-        </tr>
-        <tr>
-            <td>Mostra il le statistiche di un dato utente</td>
-         <td>general</td>
-        </tr>
-        <tr>
-            <td>Mostra la classifica dei giocatori ordinata</td>
-         <td>general</td>
-        </tr>
-      
-        <tr>    
-            <td rowspan=2>con token</td>
-            <td>Effettuare l’acquisto di uno specifico bene </td>
-         <td>user</td>
-        </tr>
-        <tr>
-            <td>Scaricare il bene acquistato</td>
-         <td>user</td>
-        </tr>
-     <tr>
-    </tbody>
-</table>
+
+| Funzioni | Ruolo |
+| -------- | ----- |
+| Ricarica il credito di un utente | Admin |
+| Mostra il credito rimasto di un utente | User |
+| Crea una nuova partita | User |
+| Esegui una mossa | User |
+| Mostra lo stato di una partita | User |
+| Mostra il log delle mosse di una data partita | User |
+| Mostra le statistiche di un dato utente | User |
+| Mostra la classifica dei giocatori ordinata | General |
 
 Ogni funzione è associata ad una diversa richiesta HTTP (POST o GET), per alcune delle quali è prevista un'autenticazione tramite token JWT.
 
 ## Rotte
-La seguente tabella mostra le richieste possibili:
 
-<table align="center">
-    <thead>
-        <tr>
-            <th>Tipo</th>
-            <th>Rotta</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr>
-         <td> GET </td>
-         <td> /ListaBeni </td>
-        </tr>
-        <tr>
-         <td> GET </td>
-         <td> /Lista </td>
-        </tr>
-         <tr>
-         <td> POST </td>
-         <td> /AcquistaBene </td>
-        </tr>
-         <tr>
-         <td> GET </td>
-         <td> /download/:bene/:formato/:tipoDownload/:idAcquisto </td>
-        </tr>
-        <tr>
-         <td> POST </td>
-         <td> /NuovoLink </td>
-        </tr>
-         <tr>
-         <td> GET </td>
-         <td> /VediAcquisti </td>
-        </tr>
-         <tr>
-         <td> POST </td>
-         <td> /AcquistaMultiplo </td>
-        </tr>
-        <tr>
-         <td> POST </td>
-         <td> /Regalo </td>
-        </tr>
-        <tr>
-         <td> GET </td>
-         <td> /VisualizzaCredito </td>
-        </tr>
-        <tr>
-         <td> POST </td>
-         <td> /Ricarica </td>
-        </tr>
-             <tr>
-         <td> POST </td>
-         <td> /AggiungiUtente </td>
-        </tr>
-    </tbody>
- </table>
+| Tipo | Rotte |
+| ---- | ----- |
+| POST | /refill |
+| POST | /show-token |
+| POST | /begin-match |
+| POST | /make-move |
+| GET | /game-state |
+| GET | /game-log |
+| GET | /user-stats |
+| GET | /leaderboard |
  
- ### Visualizzazione dei beni (ListaBeni)
-Mediante l'utilizzo di questa rotta si può visualizzare la lista di tutti i beni presenti. Questa rotta può essere richiamata da chiunque.
+## Ricarica il credito di un utente (/refill)
+Mediante l'utilizzo di questa rotta si può settare il credito di un utente. Questa rotta può essere richiamata solamente dagli utenti autenticati, con ruolo admin.
 
-I filtri possono andare in AND, e si può filtrare per:
- - tipologia (manoscritti, cartografie storiche);
- - anno (relativo al bene di interesse storico).
-
-Il payload deve essere inserito nel body della richiesta in formato JSON con la seguente struttura:
+Da effettuare tramite token JWT che deve contenere un payload JSON con la seguente struttura:
 
 ~~~
 {
-    "tipo":"manoscritto",
-    "anno":355
+    "email": "user2@mail.it",
+    "token": 50
 }
 ~~~
 
 ### Sequence Diagram
 
-#### Visualizzazione dei beni (ListaBeni)
+```mermaid
+sequenceDiagram
+autonumber
+Client->>Router: /refill
+Router->>Middleware CoR: app.post()
+Middleware CoR->>Middleware: autentication()
+Middleware->>Middleware: checkHeader()
+Middleware->>Middleware: checkToken()
+Middleware->>Middleware: verifyAndAuthenticate()
+Middleware->>Middleware CoR: next()
+Middleware CoR->>Middleware: refill()
+Middleware->>Middleware: checkAdmin()
+Middleware->>Controller: checkUser()
+Controller->>Model: Users.findByPk()
+Model->>Controller: object
+Controller->>Middleware: result: object
+Middleware->>Controller: getRole()
+Controller->>Model: Users.findByPk()
+Model->>Controller: object
+Controller->>Middleware: result: string
+Middleware->>Middleware: checkUserExistRefill()
+Middleware->>Controller: checkUser()
+Controller->>Model: Users.findByPk()
+Model->>Controller: object
+Controller->>Middleware: result: boolean
+Middleware->>Middleware CoR: next()
+Middleware CoR->>Router: next()
+Router->>Controller: refill()
+Controller->>Model: Users.update()
+Controller->>Factory: Success().getMsg()
+Factory->>Controller: json
+Controller->>Client: res.status().json
+```
+
+## Mostra credito di un utente (/show-token)
+Mediante l'utilizzo di questa rotta si può visualizzare il credito di un utente. Questa rotta può essere richiamata dagli utenti autenticati.
+
+Da effettuare tramite token JWT
+
+### Sequence Diagram
 
 ```mermaid
 sequenceDiagram
 autonumber
-client ->> app: /ListaBeni
-app ->>+ CoR: FiltroTipoAnno
-CoR ->>+ middleware: verificaContentType()
-middleware ->>- CoR:  next()
-CoR ->>+ middleware: controlloValoriFiltro()
-middleware ->>- CoR:  next()
-CoR ->>+ middleware: controlloTipoAnno()
-middleware ->>- CoR:  next()
-CoR ->>+ middleware: controlloTipo()
-middleware ->>- CoR:  next()
-CoR ->>+ middleware: controlloAnno()
-middleware ->>+ model: Bene.findAll()
-model ->>- middleware: result: bene
-middleware ->>- CoR:  next()
-CoR ->>- app : next()
-app ->>+ controller: listaBeni()
-controller ->>+ model : Bene.findAll()
-model ->>- controller : result: bene
-controller ->>+ factory : getMsg().getMsg()
-factory ->>- controller: obj:ListaBeni
-controller ->>- client:  risp.status().json()
+Client->>Router: /show-token
+Router->>Middleware CoR: app.post()
+Middleware CoR->>Middleware: autentication()
+Middleware->>Middleware: checkHeader()
+Middleware->>Middleware: checkToken()
+Middleware->>Middleware: verifyAndAuthenticate()
+Middleware->>Middleware CoR: next()
+Middleware CoR->>Middleware: checkToken()
+Middleware->>Middleware: checkUserExist()
+Middleware->>Controller: checkUser()
+Controller->>Model: Users.findByPk()
+Model->>Controller: object
+Controller->>Middleware: result: boolean
+Middleware->>Middleware: checkRemainingToken()
+Middleware->>Controller: getToken()
+Controller->>Model: Users.findByPk()
+Model->>Controller: object
+Controller->>Middleware: result: number
+Middleware->>Middleware CoR: next()
+Middleware CoR->>Router: next()
+Router->>Controller: showToken()
+Controller->>Model: Users.findByPk()
+Model->>Controller: number
+Controller->>Client: res.send()
+```
+
+## Crea una nuova partita (/begin-match)
+Mediante l'utilizzo di questa rotta si può creare una nuova partita. Questa rotta può essere richiamata solamente dagli utenti autenticati.
+
+//possibilità di scelta
+
+Da effettuare tramite token JWT che deve contenere un payload JSON con la seguente struttura:
+
+~~~
+{
+    "player2": "user2@mail.it",
+    "gridDim": 5,
+    "shipsConfig": {
+        "A": 0,
+        "B": 0,
+        "C": 0,
+        "D": 1
+    },
+    "shipDims": {
+        "A": 4,
+        "B": 3,
+        "C": 2,
+        "D": 1
+    }
+}
+~~~
+
+### Sequence Diagram
+
+```mermaid
+sequenceDiagram
+autonumber
+Client->>Router: /begin-match
+Router->>Middleware CoR: app.post()
+Middleware CoR->>Middleware: autentication()
+Middleware->>Middleware: checkHeader()
+Middleware->>Middleware: checkToken()
+Middleware->>Middleware: verifyAndAuthenticate()
+Middleware->>Middleware CoR: next()
+Middleware CoR->>Middleware: beginMatch()
+Middleware->>Middleware: checkUserExist()
+Middleware->>Controller: checkUser()
+Controller->>Model: Users.findByPk()
+Model->>Controller: object
+Controller->>Middleware: result: boolean
+Middleware->>Middleware: checkOpponentExist()
+Middleware->>Controller: checkUser()
+Controller->>Model: Users.findByPk()
+Model->>Controller: object
+Controller->>Middleware: result: boolean
+Middleware->>Middleware: checkRemainingToken()
+Middleware->>Controller: getToken()
+Controller->>Model: Users.findByPk()
+Model->>Controller: object
+Controller->>Middleware: result: number
+Middleware->>Middleware: checkUserGame()
+Middleware->>Controller: checkGameInProgress()
+Controller->>Model: Game.findOne()
+Model->>Controller: object
+Controller->>Middleware: result: boolean
+Middleware->>Middleware: checkOpponentGame()
+Middleware->>Controller: checkGameInProgress()
+Controller->>Model: Game.findOne()
+Model->>Controller: object
+Controller->>Middleware: result: boolean
+Middleware->>Middleware: checkSameUser()
+Middleware->>Middleware: checkGridConfig()
+Middleware->>Middleware CoR: next()
+Middleware CoR->>Router: next()
+Router->>Controller: updateToken()
+Controller->>Controller: getToken()
+Controller->>Model: Users.findByPk()
+Model->>Controller: number
+Controller->>Model: Users.update()
+Router->>Controller: createGame()
+Controller->>Utils: gridInitialize()
+Utils->>Controller: object
+Controller->>Utils: arrangeShips()
+Utils->>Utils: placeShip()
+Utils->>Utils: allowedOrientation()
+Utils->>Controller: object
+Controller->>Model: game:create()
+Controller->>Client: res.status().json
+```
+
+## Esegui una mossa (/make-move)
+Mediante l'utilizzo di questa rotta si può effettuare una mossa. Questa rotta può essere richiamata solamente dagli utenti autenticati.
+
+//tutte le possibilità
+
+Da effettuare tramite token JWT che deve contenere un payload JSON con la seguente struttura:
+
+~~~
+{
+    "id": 32,
+    "move": {
+        "player": "admin@mail.it",
+        "row": 1,
+        "col": 0
+    }
+}
+~~~
+
+### Sequence Diagram
+
+```mermaid
+sequenceDiagram
+autonumber
+Client->>Router: /make-move
+Router->>Middleware CoR: app.post()
+Middleware CoR->>Middleware: autentication()
+Middleware->>Middleware: checkHeader()
+Middleware->>Middleware: checkToken()
+Middleware->>Middleware: verifyAndAuthenticate()
+Middleware->>Middleware CoR: next()
+Middleware CoR->>Middleware: makeMove()
+Middleware->>Middleware: checkUserExist()
+Middleware->>Controller: checkUser()
+Controller->>Models: Users.findByPk()
+Models->>Controller: object
+Controller->>Middleware: result: boolean
+Middleware->>Middleware: checkOpponentExist()
+Middleware->>Controller: checkUser()
+Controller->>Models: Users.findByPk()
+Models->>Controller: object
+Controller->>Middleware: result: boolean
+Middleware->>Middleware: checkRemainingToken()
+Middleware->>Controller: getToken()
+Controller->>Models: Users.findByPk()
+Models->>Controller: number
+Controller->>Middleware: result: boolean
+Middleware->>Middleware: checkUserGame()
+Middleware->>Controller: checkGameInProgress()
+Controller->>Models: Game.findOne()
+Models->>Controller: object
+Controller->>Middleware: result: boolean
+Middleware->>Middleware: checkOpponentGame()
+Middleware->>Controller: checkGameInProgress()
+Controller->>Models: Game.findOne()
+Models->>Controller: object
+Controller->>Middleware: result: boolean
+Middleware->>Middleware: checkSameUser()
+Middleware->>Middleware: checkGridConfig()
+Middleware->>Middleware CoR: next()
+Middleware CoR->>Router: next()
+Router->>Controller: updateToken()
+Controller->>Controller: getToken()
+Controller->>Models: Users.findByPk()
+Models->>Controller: number
+Controller->>Models: Users.update()
+Router->>Controller: createMove()
+Controller->>Models: Game.findByPk()
+Models->>Controller: object
+Controller->>Utils: returnGridState()
+Utils->>Controller: object
+Controller->>Utils: updateLeaderboardWin()
+Utils->>Models: Leaderboard.findByPk()
+Models->>Utils: object
+Utils->>Models: leaderboard.create()
+Utils->>Models: leaderboard.update()
+Controller->>Utils: updateLeaderboardLose()
+Utils->>Models: Leaderboard.findByPk()
+Models->>Utils: object
+Utils->>Models: leaderboard.create()
+Utils->>Models: leaderboard.update()
+Controller->>Models: Game.update()
+Controller->>Client: res.send()
+Controller->>Utils: executeAIMove()
+Utils->>Utils: returnGridState()
+Utils->>Models: Game.update()
 ```
