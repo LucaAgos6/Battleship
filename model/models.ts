@@ -3,9 +3,9 @@ import { DataTypes, Sequelize } from 'sequelize';
 
 export const sequelize: Sequelize = PostgresSingleton.getConnection();
 
-/** 
-*Definizione dell'ORM attraverso "Sequelize" per l'interazione con il database
-**/
+/* 
+    Sequelize ORM definitions needed to interact with the postgres database
+*/
 
 export const Users = sequelize.define('users', {
     email: {

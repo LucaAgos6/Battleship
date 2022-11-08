@@ -5,13 +5,11 @@ import moment from 'moment';
 
 
 /**
-* Funzione che controlla la presenza dell'header nella richiesta
-* 
-* @param req -> richiesta del client
-* @param res -> risposta da parte del server
-* @param next -> riferimento al middleware successivo
-*
-**/
+* Check if the header is present in the request
+* @param req -> client request
+* @param res -> server response
+* @param next -> next middleware
+*/
 export function checkHeader (req:any, res:any, next:any): void {
   const authHeader = req.headers.authorization;
   if (authHeader) {
@@ -25,13 +23,11 @@ export function checkHeader (req:any, res:any, next:any): void {
   
 
 /**
-* Funzione che controlla la presenza del JWT nella richiesta
-* 
-* @param req -> richiesta del client
-* @param res -> risposta da parte del server
-* @param next -> riferimento al middleware successivo
-*
-**/
+* Check if the JWT is present in the request
+* @param req -> client request
+* @param res -> server response
+* @param next -> next middleware
+*/
 export function checkToken(req: any, res: any, next: any): void {
   const bearerHeader = req.headers.authorization;
   if (typeof bearerHeader !== 'undefined') {
@@ -46,13 +42,11 @@ export function checkToken(req: any, res: any, next: any): void {
 
 
 /**
-* Funzione che controlla se nel JWT è stata utilizzata una chiave che corrisponda a quella presente nel file dove sono contenute le variabili di ambiente
-* 
-* @param req -> richiesta del client
-* @param res -> risposta da parte del server
-* @param next -> riferimento al middleware successivo
-*
-**/
+* Check if the JWT secret key is correct
+* @param req -> client request
+* @param res -> server response
+* @param next -> next middleware
+*/
 export function verifyAndAuthenticate(req: any, res: any, next: any): void {
   let decoded = jwt.verify(req.token, process.env.SECRET_KEY!); 
   if (decoded !== null)
@@ -62,13 +56,11 @@ export function verifyAndAuthenticate(req: any, res: any, next: any): void {
 
 
 /**
-* Funzione che si occupa di controllare se l'utente nella richiesta sia effettivamente admin
-* 
-* @param req -> richiesta del client
-* @param res -> risposta da parte del server
-* @param next -> riferimento al middleware successivo
-*
-**/
+* Check if the user making the request is an admin or not
+* @param req -> client request
+* @param res -> server response
+* @param next -> next middleware
+*/
 export function checkAdmin(req: any, res: any, next: any): void {
   Controller.checkUser(req.bearer.email, res).then((user) => {
     if (user) {
@@ -85,13 +77,11 @@ export function checkAdmin(req: any, res: any, next: any): void {
 
 
 /**
-* Funzione utilizzata solamente dalla rotta refill che necessita il controllo sull'email dell'utente da ricaricare
-* 
-* @param req -> richiesta del client
-* @param res -> risposta da parte del server
-* @param next -> riferimento al middleware successivo
-*
-**/
+* Check if the user the admin want to refill actually exist
+* @param req -> client request
+* @param res -> server response
+* @param next -> next middleware
+*/
 export function checkUserExistRefill(req: any, res: any, next: any): void {
   Controller.checkUser(req.body.email, res).then((email) => {
     if (email) {
@@ -103,13 +93,11 @@ export function checkUserExistRefill(req: any, res: any, next: any): void {
   
   
 /**
-* Funzione che controlla se nella richiesta è presente un payload JSON ben formato
-* 
-* @param req -> richiesta del client
-* @param res -> risposta da parte del server
-* @param next -> riferimento al middleware successivo
-*
-**/
+* Check if the JSON payload in the request is a valid JSON
+* @param req -> client request
+* @param res -> server response
+* @param next -> next middleware
+*/
 export function checkJSONPayload(req: any, res: any, next: any): void {
   try {
     req.body = JSON.parse(JSON.stringify(req.body));
@@ -120,16 +108,14 @@ export function checkJSONPayload(req: any, res: any, next: any): void {
   }
 }
 
-  
+
 /**
-* Funzione utilizzata per loggare gli errori
-* 
-* @param err -> errore
-* @param req -> richiesta del client
-* @param res -> risposta da parte del server
-* @param next -> riferimento al middleware successivo
-*
-**/
+* Log the error message
+* @param err -> error
+* @param req -> client request
+* @param res -> server response
+* @param next -> next middleware
+*/
 export function logErrors(err: any, req: any, res: any, next: any): void {
   const new_err = getError(err).getMsg();
   console.log(new_err);
@@ -138,27 +124,23 @@ export function logErrors(err: any, req: any, res: any, next: any): void {
 
 
 /**
-* Funzione che si occupa di ritornare lo stato e il messaggio di errore
-* 
-* @param err -> errore
-* @param req -> richiesta del client
-* @param res -> risposta da parte del server
-* @param next -> riferimento al middleware successivo
-*
-**/
+* Returns the error message and status code to the client as a response 
+* @param err -> error
+* @param req -> client request
+* @param res -> server response
+* @param next -> next middleware
+*/
 export function errorHandler(err: any, req: any, res: any, next: any): void {
   res.status(err.status).json({error: err.status, message: err.msg});
 }
 
  
 /**
-* Funzione utilizzata per verificare il content-type 
-* 
-* @param req -> richiesta del client
-* @param res -> risposta da parte del server
-* @param next -> riferimento al middleware successivo
-*
-**/
+* Check if the header content-type is a JSON
+* @param req -> client request
+* @param res -> server response
+* @param next -> next middleware
+*/
 export function checkPayloadHeader(req: any, res: any, next: any): void {
   if (req.headers["content-type"] == "application/json") { 
     console.log("This is req " + req.content); next(); 
@@ -168,13 +150,11 @@ export function checkPayloadHeader(req: any, res: any, next: any): void {
   
   
 /**
-* Funzione che si occupa di controllare se l'utente nella richiesta esista o meno
-* 
-* @param req -> richiesta del client
-* @param res -> risposta da parte del server
-* @param next -> riferimento al middleware successivo
-*
-**/
+* Check if the user making the request exist or not
+* @param req -> client request
+* @param res -> server response
+* @param next -> next middleware
+*/
 export function checkUserExist(req: any, res: any, next: any): void {
   Controller.checkUser(req.bearer.email, res).then((email) => {
     if (email) next();
@@ -184,13 +164,11 @@ export function checkUserExist(req: any, res: any, next: any): void {
 
 
 /**
-* Funzione che si occupa di controllare se il secondo player esista o meno
-*
-* @param req -> richiesta del client
-* @param res -> risposta da parte del server
-* @param next -> riferimento al middleware successivo
-*
-**/
+* Check if the opponent player exist
+* @param req -> client request
+* @param res -> server response
+* @param next -> next middleware
+*/
 export function checkOpponentExist(req: any, res: any, next: any): void {
   Controller.checkUser(req.body.player2, res).then((player2) => {
     if (player2) next();
@@ -200,26 +178,22 @@ export function checkOpponentExist(req: any, res: any, next: any): void {
   
 
 /**
-* Funzione utilizzata per le rotte inesistenti
-* 
-* @param req -> richiesta del client
-* @param res -> risposta da parte del server
-* @param next -> riferimento al middleware successivo
-*
-**/
+* Manages invalid routes
+* @param req -> client request
+* @param res -> server response
+* @param next -> next middleware
+*/
 export function routeNotFound(req: any, res: any, next: any): void{
   next(ErrorEnum.ErrRouteNotFound);
 }
 
 
 /**
-* Funzione che si occupa di controllare se l'utente che effettua una richiesta abbia token sufficienti
-* 
-* @param req -> richiesta del client
-* @param res -> risposta da parte del server
-* @param next -> riferimento al middleware successivo
-*
-**/
+* Check if the player making the request has enough token
+* @param req -> client request
+* @param res -> server response
+* @param next -> next middleware
+*/
 export function checkRemainingToken(req: any, res: any, next: any): void {
   Controller.getToken(req.bearer.email, res).then((token) => {
       if (token >= 0.4) next();
@@ -229,13 +203,11 @@ export function checkRemainingToken(req: any, res: any, next: any): void {
 
 
 /**
-* Funzione che si occupa di controllare se l'utente non abbia già una partita in corso 
-* 
-* @param req -> richiesta del client
-* @param res -> risposta da parte del server
-* @param next -> riferimento al middleware successivo
-* 
-**/
+* Check if the user creating a game doesn't have an ongoing match 
+* @param req -> client request
+* @param res -> server response
+* @param next -> next middleware
+*/
 export function checkUserGame(req: any, res: any, next: any,): void {
   let player: string = "player1";
   Controller.checkGameInProgress(req.bearer.email, player).then((game) => {
@@ -246,13 +218,11 @@ export function checkUserGame(req: any, res: any, next: any,): void {
 
 
 /**
-* Funzione che si occupa di controllare se l'avversario non abbia già una partita in corso 
-* 
-* @param req -> richiesta del client
-* @param res -> risposta da parte del server
-* @param next -> riferimento al middleware successivo
-* 
-**/
+* Check if the opponent the user want to play against doesn't have an ongoing match 
+* @param req -> client request
+* @param res -> server response
+* @param next -> next middleware
+*/
 export function checkOpponentGame(req: any, res: any, next: any): void {
   let player: string = "player2";
   if (req.body.player2 == 'AI') next();
@@ -266,12 +236,10 @@ export function checkOpponentGame(req: any, res: any, next: any): void {
 
 
 /**
-* Funzione che si occupa di controllare se l'utente voglia iniziare una partita con se stesso 
-* 
-* @param req -> richiesta del client
-* @param res -> risposta da parte del server
-* @param next -> riferimento al middleware successivo
-*
+* Check if the user is trying to start a game against himself 
+* @param req -> client request
+* @param res -> server response
+* @param next -> next middleware
 */
 export function checkSameUser(req: any, res: any, next: any): void {
   if (req.bearer.email !== req.body.player2) next();
@@ -280,13 +248,12 @@ export function checkSameUser(req: any, res: any, next: any): void {
 
 
 /**
- * Check if the grid configuration provided is allowed or not
- * @param req -> client request
- * @param res -> server response
- * @param next -> next middleware
- */
+* Check if the grid configuration provided is allowed or not
+* @param req -> client request
+* @param res -> server response
+* @param next -> next middleware
+*/
 export function checkGridConfig(req: any, res: any, next: any): void {
-  let allowedGridDims = [5, 8, 10];
   let gridDim = req.body.gridDim;
   let shipsConfig = req.body.shipsConfig;
   let shipDims: any = {
@@ -309,13 +276,11 @@ export function checkGridConfig(req: any, res: any, next: any): void {
 
 
 /**
-* Funzione che si occupa di controllare se la mossa possa essere effettuata
-* 
-* @param req -> richiesta del client
-* @param res -> risposta da parte del server
-* @param next -> riferimento al middleware successivo
-*
-**/
+* Check if the move is allowed
+* @param req -> client request
+* @param res -> server response
+* @param next -> next middleware
+*/
 export function checkGameMove(req: any, res: any, next: any): void {
   Controller.checkGameMoveById(req.bearer.email, req.body.id, req.body.move.row, req.body.move.col).then((id) => {
     if (id) next();
@@ -325,12 +290,10 @@ export function checkGameMove(req: any, res: any, next: any): void {
 
 
 /**
-* Funzione che si occupa di controllare se la data partita esisti o meno
-* 
-* @param req -> richiesta del client
-* @param res -> risposta da parte del server
-* @param next -> riferimento al middleware successivo
-*
+* Check if the game exist on DB
+* @param req -> client request
+* @param res -> server response
+* @param next -> next middleware
 */
 export function checkGameExist(req: any, res: any, next: any): void {
   Controller.checkGameExistById(req.body.id).then((id) => {
@@ -340,11 +303,11 @@ export function checkGameExist(req: any, res: any, next: any): void {
 }
 
 /**
- * Check if the player doing the turn can do it
- * @param req -> client request
- * @param res -> server response
- * @param next -> next middleware
- */
+* Check if the player doing the turn can do it
+* @param req -> client request
+* @param res -> server response
+* @param next -> next middleware
+*/
 export function checkPlayerTurn(req: any, res: any, next: any): void {
   Controller.checkPlayerTurnById(req.body.id, req.bearer.email).then((id) => {
     if (id) next();
@@ -353,12 +316,10 @@ export function checkPlayerTurn(req: any, res: any, next: any): void {
 }
 
 /**
-* Funzione che si occupa di controllare se la data sia accettabile
-* 
-* @param req -> richiesta del client
-* @param res -> risposta da parte del server
-* @param next -> riferimento al middleware successivo
-*
+* Check if the input dates are valid ones
+* @param req -> client request
+* @param res -> server response
+* @param next -> next middleware
 */
 export function checkDate(req: any, res: any, next: any): void {
   var dateFormats = ["YYYY-MM-DD", "MM-DD-YYYY", "YYYY/MM/DD", "MM/DD/YYYY"];
@@ -378,12 +339,10 @@ export function checkDate(req: any, res: any, next: any): void {
 
 
 /**
-* Funzione che si occupa di controllare il sort sia corretto
-* 
-* @param req -> richiesta del client
-* @param res -> risposta da parte del server
-* @param next -> riferimento al middleware successivo
-*
+* Check the sorting method, must be either ASC or DESC
+* @param req -> client request
+* @param res -> server response
+* @param next -> next middleware
 */
 export function checkSortMethod(req: any, res: any, next: any): void {
   if (req.body.sort === 'asc' || req.body.sort === 'desc') next();

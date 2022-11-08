@@ -1,11 +1,13 @@
 import { Sequelize } from 'sequelize';
 require('dotenv').config()
 
+/*
+    Singleton design pattern used to correctly manage the connection
+    to the postgres server, returning a new instance if needed or
+    reusing it if it was already instantiated, thus blocking the creation
+    of multiple db connections.
+*/
 
-/**
-* Utilizzo del design pattern "Singleton" per poter creare una singola 
-* connessione al database grazie alla libreria "sequelize"
-**/
 export class PostgresSingleton {
     private static instance: PostgresSingleton;
     private connection: Sequelize;

@@ -1,12 +1,11 @@
 import {Game, Leaderboard} from '../model/models';
-const path = require('node:path');
-const fs = require('fs');
+import fs from 'fs';
 
 /**
- * Initializes player's grids, creating an empty grid for each player
- * @param gridDim 
- * @returns 
- */
+* Initializes player's grids, creating an empty grid for each player
+* @param gridDim -> desired grid dimension
+* @returns -> object containing empty grids of gridDim x gridDim dimension
+*/
 export function gridInitialize(gridDim: number) {
     type stringArray = {
         grid1: any[],
@@ -33,12 +32,12 @@ export function gridInitialize(gridDim: number) {
 
 
 /**
- * Randomly place the ships on the grid of both players
- * @param obj -> object containing the grids
- * @param shipsConfig -> object containing ships configuration
- * @param shipDims -> object containing ship's dimension for each type
- * @returns -> return an object containing grids with ships
- */
+* Randomly place the ships on the grid of both players
+* @param obj -> object containing the grids
+* @param shipsConfig -> object containing ships configuration
+* @param shipDims -> object containing ship's dimension for each type
+* @returns -> return an object containing grids with ships
+*/
 export function arrangeShips(obj: any, shipsConfig: any, shipDims: any) {
     let grid1: any = obj.grid1;
     let grid2: any = obj.grid2;
@@ -65,12 +64,12 @@ export function arrangeShips(obj: any, shipsConfig: any, shipDims: any) {
 
 
 /**
- * Place a ship on the grid
- * @param shipName -> ship name (i.e. A1, B2, B3 etc.)
- * @param shipDim -> ship dimension in cell (i.e. 2 cells long, 3 cells, etc.)
- * @param grid -> a (griDim x gridDim) matrix where the ship needs to be placed
- * @returns 
- */
+* Place a ship on the grid
+* @param shipName -> ship name (i.e. A1, B2, B3 etc.)
+* @param shipDim -> ship dimension in cell (i.e. 2 cells long, 3 cells, etc.)
+* @param grid -> a (griDim x gridDim) matrix where the ship needs to be placed
+* @returns -> grid with a ship fully placed
+*/
 function placeShip(shipName: string, shipDim: number, grid: any) {
 
     let shipPlaced: boolean = false;
@@ -126,7 +125,7 @@ function placeShip(shipName: string, shipDim: number, grid: any) {
 }
 
 
-// check which orientations are available for the ship
+// check which orientations are available for the current ship
 function allowedOrientations(row: number, col: number, shipDim: number, grid: string) {
     let orientations: string[] = [];
     let isAllowed: boolean = false;
@@ -175,7 +174,10 @@ function allowedOrientations(row: number, col: number, shipDim: number, grid: st
 }
 
 
-// funzione che riporta nella leaderboard tutti i dati necessari sulla vittoria del giocatore
+/**
+* Update leaderboard data for the winning player
+* @param email 
+*/
 export async function updateLeaderboardWin(email: string): Promise<void> {
     let leaderboard: any;
     let numMatch: number;
@@ -210,7 +212,10 @@ export async function updateLeaderboardWin(email: string): Promise<void> {
 }
 
 
-// funzione che riporta nella leaderboard tutti i dati necessari sulla sconfitta del giocatore
+/**
+* Update leaderboard data for the losing player
+* @param email -> loser email
+*/
 export async function updateLeaderboardLose(email: string): Promise<void> {
     let leaderboard: any;
     let numMatch: number;
@@ -244,11 +249,12 @@ export async function updateLeaderboardLose(email: string): Promise<void> {
     }
 }
 
+
 /**
- * Export the game log as a json file
- * @param logMoves -> object containing the moves log
- * @param exportPath -> exported file path
- */
+* Export the game log as a json file
+* @param logMoves -> object containing the moves log
+* @param exportPath -> exported file path
+*/
 export function exportAsJSON(logMoves: any, exportPath: string) {
     let logMovesJSON = JSON.stringify(logMoves);
 
@@ -258,11 +264,12 @@ export function exportAsJSON(logMoves: any, exportPath: string) {
     });
 }
 
+
 /**
- * Export the game log as a json file
- * @param logMoves -> object containing the moves log
- * @param exportPath -> exported file path
- */
+* Export the game log as a json file
+* @param logMoves -> object containing the moves log
+* @param exportPath -> exported file path
+*/
 export function exportAsCSV(logMoves: any, exportPath: string) {
     let headerLine: string = 'Player, Row, Col';
     let moves = logMoves.moves;
@@ -281,13 +288,14 @@ export function exportAsCSV(logMoves: any, exportPath: string) {
     });
 }
 
+
 /**
- * Check if a ship has been sunk and check if the game is over
- * @param shipHit 
- * @param grid 
- * @param gridDim 
- * @returns 
- */
+* Check if a ship has been sunk and check if the game is over
+* @param shipHit 
+* @param grid 
+* @param gridDim 
+* @returns 
+*/
 export function returnGridState(shipName: string, grid: any, gridDim: number) {
     let isGameClosed: boolean = true;
     let isShipSunk: boolean = true;
@@ -309,6 +317,11 @@ export function returnGridState(shipName: string, grid: any, gridDim: number) {
     return gridState
 }
 
+
+/**
+* Execute a random allowed move for the AI
+* @param game 
+*/
 export function executeAIMove(game: any) {
     let gridState: any;
     let isGameClosed: boolean = true;

@@ -3,7 +3,6 @@ import { ErrorEnum, getError, Success } from '../factory/factory';
 import * as Utils from '../utils/utils';
 import path from 'path';
 import * as SequelizeQueries from './sequelizeQueries'
-import { gameState } from '../middleware/middleware_CoR';
 
 /**
  * Returns true if the user exist in database, false otherwise
@@ -345,7 +344,8 @@ export async function createMove(email: string, id: string, move: any, res: any)
             grid_dim: game.grid_dim, 
             game_date: game.game_date
         }
-    });   
+    });
+    // if playing against AI, the AI will make a random move right after the player
     if (game.player2 === 'AI' && isGameClosed === false) {
         Utils.executeAIMove(game)
     }
@@ -470,11 +470,10 @@ export async function userStats(email: string, startDate: Date, endDate: Date, r
     res.send(playerStats);
 }
 
-
 /**
- * Return the leaderboard sort as request
- * @param id -> game id
- * @param res -> response
+ * Send the leaderboard as a response sorted in the desired order
+ * @param sort -> sorting method (ASC or DESC)
+ * @param res -> server response
  */
 export async function showLeaderboard(sort: string, res: any): Promise<any> {
     let leaderboard: any;
