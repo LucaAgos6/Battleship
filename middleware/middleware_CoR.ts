@@ -36,7 +36,8 @@ export const beginMatch = [
     Middleware.checkRemainingToken,
     Middleware.checkUserGame,
     Middleware.checkOpponentGame,
-    Middleware.checkSameUser
+    Middleware.checkSameUser,
+    Middleware.checkGridConfig
 ]
 
 export const makeMove = [

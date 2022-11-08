@@ -192,6 +192,14 @@ class ErrPlayerTurn implements Msg {
     }
 }
 
+class ErrGridConfig implements Msg {
+    getMsg(): { status: number; msg: string; } {
+        return {
+            status: 402,
+            msg: "Error: this grid configuration is not allowed!"
+        }
+    }
+}
 
 /*
 * Enumerazione per identificare i diversi tipi di errore
@@ -216,7 +224,8 @@ export enum ErrorEnum {
     ErrorPlayerStats,
     ErrorDateFormat,
     ErrorSortMethod,
-    ErrorPlayerTrun
+    ErrorPlayerTrun,
+    ErrorGridConfig
 }
 
 /** 
@@ -279,6 +288,9 @@ export function getError(type: ErrorEnum): Msg{
             break;
         case ErrorEnum.ErrorPlayerTrun:
             val = new ErrPlayerTurn();
+            break;
+        case ErrorEnum.ErrorGridConfig:
+            val = new ErrGridConfig();
             break;
         default: ErrorEnum.ErrorGeneral
             val = new ErrorGeneral();
