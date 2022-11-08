@@ -31,11 +31,11 @@ CREATE TABLE leaderboard(
 );
 
 INSERT INTO users (email, role, token) VALUES
-  ('admin@mail.it', 'admin', 100),
-  ('user1@mail.it', 'user', 100),
-  ('user2@mail.it', 'user', 100),
-  ('user3@mail.it', 'user', 100),
-  ('user4@mail.it', 'user', 100),
-  ('user5@mail.it', 'user', 100),
+  ('admin@mail.it', 'admin', 50),
+  ('user1@mail.it', 'user', 10),
+  ('user2@mail.it', 'user', 10),
+  ('user3@mail.it', 'user', 10),
+  ('user4@mail.it', 'user', 10),
+  ('user5@mail.it', 'user', 10),
   ('user6@mail.it', 'user', 0),
   ('AI', 'user', 0);
