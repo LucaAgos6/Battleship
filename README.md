@@ -1,8 +1,6 @@
 # Battleship backend
 ## Descrizione del progetto
-Il progetto consiste in sistema di backend che consenta di gestire il gioco della battaglia navale. Il sistema prevede la possibilità di far interagire due utenti (autenticati mediante JWT) o un utente contro l’elaboratore. 
-
-Sia la creazione di una partita e sia la mossa hanno un costo in termini di token.
+Il progetto consiste in sistema di backend che consenta di gestire il gioco della battaglia navale. Il sistema prevede la possibilità di far interagire due utenti (autenticati mediante JWT) o un utente contro l’elaboratore. Alla creazione si possono scegliere tre configurazioni di griglie (5x5, 8x8, 10x10) e diverse configurazioni sul numero delle navi da piazzare. L'allocazione delle navi è randomica. Inoltre, si possono vIsualizzare tutte le info relative ad una partita, comprese di statistiche e di classifica. La creazione di una partita e la singola mossa hanno un costo in termini di token, rispettivamente 0.4 e 0.01.
 
 ## Funzioni del sistema
 
@@ -32,7 +30,7 @@ Ogni funzione è associata ad una diversa richiesta HTTP (POST o GET), per alcun
 | GET | /user-stats |
 | GET | /leaderboard |
 
-## PROGETTAZIONE – UML
+## Progettazione
 
 ### Use Case Diagram
 
@@ -46,7 +44,6 @@ Ogni funzione è associata ad una diversa richiesta HTTP (POST o GET), per alcun
 Mediante l'utilizzo di questa rotta si può settare il credito di un utente. Questa rotta può essere richiamata solamente dagli utenti autenticati, con ruolo admin.
 
 Da effettuare tramite token JWT che deve contenere un payload JSON con la seguente struttura:
-
 ~~~
 {
     "email": "user2@mail.it",
@@ -128,20 +125,42 @@ Controller->>Client: res.send()
 
 ## Crea una nuova partita (/begin-match)
 Mediante l'utilizzo di questa rotta si può creare una nuova partita. Questa rotta può essere richiamata solamente dagli utenti autenticati.
+L'utente autenticato con JWT può iniziare una partita specificando il nome del player 2. Quest'ultimo può essere o un utente o l'intelligenza artificiale (AI). Inoltre, si può scegliere la dimensione della griglia tra le seguenti configurazioni: 5x5, 8x8, 10x10. L'ultima scelta che si può fare alla creazione della partita è il numero di navi in shipsConfig. Infatti, a seconda della grandezza della griglia si portanno scegliere un numero limitato di navi. Ad esempio, se si sceglie la griglia 8x8, il numero massimo di navi sarà il seguente:
+* N° max di navi da 4 caselle = 4;
+* N° max di navi da 3 caselle = 4;
+* N° max di navi da 2 caselle = 6;
+* N° max di navi da 1 casella = 6.
 
-//possibilità di scelta
-
-Da effettuare tramite token JWT che deve contenere un payload JSON con la seguente struttura:
-
+Rotta da effettuare tramite token JWT che deve contenere un payload JSON con la seguente struttura:
+* Match contro un utente con griglia 5x5
 ~~~
 {
     "player2": "user2@mail.it",
     "gridDim": 5,
     "shipsConfig": {
-        "A": 0,
+        "A": 2,
         "B": 0,
-        "C": 0,
+        "C": 2,
         "D": 1
+    },
+    "shipDims": {
+        "A": 4,
+        "B": 3,
+        "C": 2,
+        "D": 1
+    }
+}
+~~~
+* Match contro l'intelligenza artificiale con griglia 10x10
+~~~
+{
+    "player2": "AI",
+    "gridDim": 10,
+    "shipsConfig": {
+        "A": 6,
+        "B": 4,
+        "C": 2,
+        "D": 8
     },
     "shipDims": {
         "A": 4,
@@ -206,22 +225,20 @@ Controller->>Utils: arrangeShips()
 Utils->>Utils: placeShip()
 Utils->>Utils: allowedOrientation()
 Utils->>Controller: object
-Controller->>Model: game:create()
+Controller->>Model: game.create()
 Controller->>Client: res.status().json
 ```
 
 ## Esegui una mossa (/make-move)
-Mediante l'utilizzo di questa rotta si può effettuare una mossa. Questa rotta può essere richiamata solamente dagli utenti autenticati.
+Mediante l'utilizzo di questa rotta si può effettuare una mossa. Questa rotta può essere richiamata solamente dagli utenti autenticati. 
+L'utente autenticato tramite JWT deve semplicemente scegliere una riga (row) e una colonna (col) che saranno le due coordinate della cella in cui sparerà. L'id univoco della partita dovrà essere lo stesso della partita che sta giocando quell'utente.
 
-//tutte le possibilità
-
-Da effettuare tramite token JWT che deve contenere un payload JSON con la seguente struttura:
-
+La rotta si deve effettuare tramite token JWT che deve contenere un payload JSON con la seguente struttura:
 ~~~
 {
-    "id": 32,
+    "id": 10,
     "move": {
-        "player": "admin@mail.it",
+        "player": "user1@mail.it",
         "row": 1,
         "col": 0
     }
@@ -298,12 +315,10 @@ Utils->>Models: Game.update()
 ```
 
 ## Mostra lo stato di una partita (/game-state)
-Mediante l'utilizzo di questa rotta si può vedere lo stato di una partita. Questa rotta può essere richiamata solamente dagli utenti autenticati.
+Mediante l'utilizzo di questa rotta si può vedere lo stato di una partita.
+L'utente autenticato tramite JWT può vedere lo stato di una partita semplicemente inserendo l'id della partita in corso o terminata. Questa rotta può essere richiamata solamente dagli utenti autenticati.
 
-//tutte le possibilità
-
-Da effettuare tramite token JWT che deve contenere un payload JSON con la seguente struttura:
-
+Il payload JSON deve avere la seguente struttura:
 ~~~
 {
     "id": 10
@@ -342,17 +357,23 @@ Controller->>Client: res.send()
 ```
 
 ## Mostra il log delle mosse di una data partita (/game-log)
-Mediante l'utilizzo di questa rotta si può vedere il log di una data partita. Questa rotta può essere richiamata solamente dagli utenti autenticati.
-
-//tutte le possibilità
+Mediante l'utilizzo di questa rotta si può vedere il log di una data partita. Questa rotta può essere richiamata solamente dagli utenti autenticati. Inoltre, è data la possibilità di esportare il log delle mosse in formato JSON o CSV ed il relativo path dove verrà salvato il file.
 
 Da effettuare tramite token JWT che deve contenere un payload JSON con la seguente struttura:
-
+* Export in CSV
 ~~~
 {
     "id": 10,
     "path": "C:/Users/git/Battleship",
     "format": "CSV"
+}
+~~~
+* Export in JSON
+~~~
+{
+    "id": 10,
+    "path": "C:/Users/git/Battleship",
+    "format": "JSON"
 }
 ~~~
 
@@ -390,16 +411,13 @@ Controller->>Client: res.send()
 ```
 
 ## Mostra le statistiche di un dato utente (/user-stats)
-Mediante l'utilizzo di questa rotta si possono vedere le statistiche di un dato giocatore. Questa rotta può essere richiamata solamente dagli utenti autenticati.
+Mediante l'utilizzo di questa rotta si possono vedere le statistiche di un dato giocatore nell'intervallo di date scelto nella richiesta. Questa rotta può essere richiamata solamente dagli utenti autenticati.
 
-//tutte le possibilità
-
-Da effettuare tramite token JWT che deve contenere un payload JSON con la seguente struttura:
-
+Rotta da effettuare tramite token JWT che deve contenere un payload JSON con la seguente struttura:
 ~~~
 {
     "start_date": "10/06/2022", 
-    "end_date": "10/07/2022"
+    "end_date": "10/12/2022"
 }
 ~~~
 
@@ -435,15 +453,19 @@ Controller->>Client: res.send()
 ```
 
 ## Mostra la classifica dei giocatori ordinata (/leaderboard)
-Mediante l'utilizzo di questa rotta si può vedere la classifica. Questa rotta può essere richiamata da chiunque.
-
-//tutte le possibilità
+Mediante l'utilizzo di questa rotta si può vedere la classifica ordinata in modo crescente o descrescente. Questa rotta può essere richiamata da chiunque.
 
 Da effettuare con un payload JSON con la seguente struttura:
-
+* Classifica decrescente
 ~~~
 {
     "sort": "desc"
+}
+~~~
+* Classifica crescente
+~~~
+{
+    "sort": "asc"
 }
 ~~~
 
@@ -464,7 +486,7 @@ Sequelize Queries->>Controller: object
 Controller->>Client: res.send()
 ```
 
-## PATTERN UTILIZZATI
+## Pattern utilizzati
 
 ### Factory Method
 Il **factory method** è un pattern di progettazione creazionale che fornisce un’interfaccia per la creazione di oggetti in una superclasse, ma consente alle sottoclassi di modificare il tipo di oggetti che verranno creati.  
