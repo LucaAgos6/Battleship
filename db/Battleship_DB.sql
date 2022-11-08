@@ -1,10 +1,10 @@
 DROP DATABASE IF EXISTS Battleship;
-
-CREATE DATABASE Battleship;
-
 DROP TABLE IF EXISTS users;
 DROP TABLE IF EXISTS game;
 DROP TABLE IF EXISTS leaderboard;
+
+CREATE DATABASE Battleship;
+\c Battleship
 
 CREATE TABLE users(
     email VARCHAR(100) NOT NULL PRIMARY KEY,
