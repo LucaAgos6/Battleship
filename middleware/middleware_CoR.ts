@@ -1,8 +1,9 @@
 import * as Middleware from './middleware';
 
-/** 
-*Catene di middleware
-**/
+/* 
+    Chains of Responsibility design pattern used to validates
+    various user requests 
+*/
 
 export const authentication = [
     Middleware.checkHeader,

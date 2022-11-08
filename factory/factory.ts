@@ -1,11 +1,9 @@
-/** 
-*
-* Utilizzo del design pattern "Factory" per la gestione efficiente degli errori
-*
-*
-* Interfaccia utilizzata da tutte le classi sottostanti per definire il messaggio di errore
-*
-**/
+/*
+    Factory design pattern used to generate different errors.
+    All errors classes derive from the same interface Msg,
+    defining a status message and msg string that will be sent
+    by the server to the client as a response.
+*/
 
 interface Msg {
     getMsg():{status: number, msg: string};
@@ -201,9 +199,7 @@ class ErrGridConfig implements Msg {
     }
 }
 
-/*
-* Enumerazione per identificare i diversi tipi di errore
-*/
+
 export enum ErrorEnum {
     ErrTokenHeader,
     MissingToken,
@@ -229,7 +225,7 @@ export enum ErrorEnum {
 }
 
 /** 
-* Funzione che permette di restituire un oggetto in base all'enum in input
+* Returns the appropriate error class instance based on the input enum
 **/
 let val: Msg;
 export function getError(type: ErrorEnum): Msg{
