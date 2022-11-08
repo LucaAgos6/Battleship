@@ -2,6 +2,7 @@ import * as jwt from 'jsonwebtoken';
 import {ErrorEnum, getError} from '../factory/factory';
 import * as Controller from '../controller/controller';
 import moment from 'moment';
+import { stringify } from 'querystring';
 
 
 /**
@@ -256,21 +257,23 @@ export function checkSameUser(req: any, res: any, next: any): void {
 export function checkGridConfig(req: any, res: any, next: any): void {
   let gridDim = req.body.gridDim;
   let shipsConfig = req.body.shipsConfig;
-  let shipDims: any = {
+  let shipDims = stringify(req.body.shipDims);
+  let origShipDims: any = {
     "A": 4,
     "B": 3,
     "C": 2,
     "D": 1
   }
+  origShipDims = stringify(origShipDims);
 
   let grid5AllowedConfig = (gridDim === 5 && (shipsConfig.A <= 2 && shipsConfig.B <= 2 && shipsConfig.C <= 2 && shipsConfig.D <= 4));
   let grid8AllowedConfig = (gridDim === 8 && (shipsConfig.A <= 4 && shipsConfig.B <= 4 && shipsConfig.C <= 6 && shipsConfig.D <= 6));
   let grid10AllowedConfig = (gridDim === 10 && (shipsConfig.A <= 6 && shipsConfig.B <= 6 && shipsConfig.C <= 8 && shipsConfig.D <= 8));
 
-  if (req.body.shipDims !== shipDims) {
-    next(ErrorEnum.ErrorGridConfig, res);
+  if (shipDims === origShipDims) {
+    if (grid5AllowedConfig || grid8AllowedConfig || grid10AllowedConfig) next();
+    else next(ErrorEnum.ErrorGridConfig, res);
   }
-  if (grid5AllowedConfig || grid8AllowedConfig || grid10AllowedConfig) next();
   else next(ErrorEnum.ErrorGridConfig, res);
 }
 

@@ -480,7 +480,8 @@ export async function showLeaderboard(sort: string, res: any): Promise<any> {
 
     leaderboard = await SequelizeQueries.getLeaderboard(sort);
 
-    if (!leaderboard) {
+    // leaderboard empty
+    if (leaderboard.length === 0) {
         res.send('There is no player in leaderboard yet!');
     }
     else {
