@@ -138,7 +138,9 @@ export async function createGame(player1: string, player2: string, gridDim: numb
     };
 
     let gameStatus: string = 'in progress';
-    const now: Date = new Date();
+    const todayDate = new Date().toISOString().slice(0, 10);
+    console.log(todayDate);
+
 
     try{
         await Game.create({
@@ -149,7 +151,7 @@ export async function createGame(player1: string, player2: string, gridDim: numb
             grid_dim: gridDim, 
             grids: grids, 
             log_moves: logMoves, 
-            game_date: now.toLocaleDateString()
+            game_date: todayDate
         });
 
         res.status(200).json({
@@ -159,7 +161,7 @@ export async function createGame(player1: string, player2: string, gridDim: numb
             game_status: gameStatus, 
             player_turn: player1, 
             grid_dim: gridDim, 
-            game_date: now.toLocaleDateString()
+            game_date: todayDate
         });
     }
     catch(error){
