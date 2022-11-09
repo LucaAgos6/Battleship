@@ -139,8 +139,6 @@ export async function createGame(player1: string, player2: string, gridDim: numb
 
     let gameStatus: string = 'in progress';
     const todayDate = new Date().toISOString().slice(0, 10);
-    console.log(todayDate);
-
 
     try{
         await Game.create({
