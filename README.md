@@ -1,6 +1,6 @@
 # Battleship backend
 ## Descrizione del progetto
-Il progetto consiste in sistema di backend che consenta di gestire il gioco della battaglia navale. Il sistema prevede la possibilità di far interagire due utenti (autenticati mediante JWT) o un utente contro l’elaboratore. Alla creazione si possono scegliere tre configurazioni di griglie (5x5, 8x8, 10x10) e diverse configurazioni sul numero delle navi da piazzare. L'allocazione delle navi è randomica. Inoltre, si possono vIsualizzare tutte le info relative ad una partita, comprese di statistiche e di classifica. La creazione di una partita e la singola mossa hanno un costo in termini di token, rispettivamente 0.4 e 0.01.
+Il progetto consiste in sistema di backend che consenta di gestire il gioco della battaglia navale. Il sistema prevede la possibilità di far interagire due utenti (autenticati mediante JWT) o un utente contro l’elaboratore. Alla creazione si possono scegliere tre configurazioni di griglie (5x5, 8x8, 10x10) e diverse configurazioni sul numero delle navi da piazzare. L'allocazione delle navi è randomica. Inoltre, si possono visualizzare tutte le info relative ad una partita, comprese di statistiche e di classifica. La creazione di una partita e la singola mossa hanno un costo in termini di token, rispettivamente 0.4 e 0.01.
 
 ## Funzioni del sistema
 
@@ -231,7 +231,7 @@ Controller->>Client: res.status().json
 
 ## Esegui una mossa (/make-move)
 Mediante l'utilizzo di questa rotta si può effettuare una mossa. Questa rotta può essere richiamata solamente dagli utenti autenticati. 
-L'utente autenticato tramite JWT deve semplicemente scegliere una riga (row) e una colonna (col) che saranno le due coordinate della cella in cui sparerà. L'id univoco della partita dovrà essere lo stesso della partita che sta giocando quell'utente.
+L'utente autenticato tramite JWT deve semplicemente scegliere una riga (row) e una colonna (col) che saranno le due coordinate della cella in cui sparerà. Le coordinate devono essere tra 0 e la dimensione della griglia - 1. L'id univoco della partita dovrà essere lo stesso della partita che sta giocando quell'utente.
 
 La rotta si deve effettuare tramite token JWT che deve contenere un payload JSON con la seguente struttura:
 ~~~
@@ -357,7 +357,7 @@ Controller->>Client: res.send()
 ```
 
 ## Mostra il log delle mosse di una data partita (/game-log)
-Mediante l'utilizzo di questa rotta si può vedere il log di una data partita. Questa rotta può essere richiamata solamente dagli utenti autenticati. Inoltre, è data la possibilità di esportare il log delle mosse in formato JSON o CSV ed il relativo path dove verrà salvato il file.
+Mediante l'utilizzo di questa rotta si può vedere il log di una data partita. Questa rotta può essere richiamata solamente dagli utenti autenticati. Inoltre, è data la possibilità di esportare il log delle mosse in formato JSON o CSV ed il relativo path dove verrà salvato il file. Se non si vuole esportare il log delle mosse basta lasciare vuoti il campo "path" oppure "format".
 
 Da effettuare tramite token JWT che deve contenere un payload JSON con la seguente struttura:
 * Export in CSV
@@ -411,13 +411,13 @@ Controller->>Client: res.send()
 ```
 
 ## Mostra le statistiche di un dato utente (/user-stats)
-Mediante l'utilizzo di questa rotta si possono vedere le statistiche di un dato giocatore nell'intervallo di date scelto nella richiesta. Questa rotta può essere richiamata solamente dagli utenti autenticati.
+Mediante l'utilizzo di questa rotta si possono vedere le statistiche di un dato giocatore nell'intervallo di date scelto nella richiesta. Questa rotta può essere richiamata solamente dagli utenti autenticati. La data va espressa in formato YYYY/MM/DD oppure YYYY-MM-DD.
 
 Rotta da effettuare tramite token JWT che deve contenere un payload JSON con la seguente struttura:
 ~~~
 {
-    "start_date": "10/06/2022", 
-    "end_date": "10/12/2022"
+    "start_date": "2022/11/06", 
+    "end_date": "2022/11/10"
 }
 ~~~
 
@@ -453,7 +453,7 @@ Controller->>Client: res.send()
 ```
 
 ## Mostra la classifica dei giocatori ordinata (/leaderboard)
-Mediante l'utilizzo di questa rotta si può vedere la classifica ordinata in modo crescente o descrescente. Questa rotta può essere richiamata da chiunque.
+Mediante l'utilizzo di questa rotta si può vedere la classifica ordinata in modo crescente o descrescente. Questa rotta è pubblica.
 
 Da effettuare con un payload JSON con la seguente struttura:
 * Classifica decrescente
@@ -488,34 +488,35 @@ Controller->>Client: res.send()
 
 ## Pattern utilizzati
 
-### Factory Method
+### Factory Method:
 Il **factory method** è un pattern di progettazione creazionale che fornisce un’interfaccia per la creazione di oggetti in una superclasse, ma consente alle sottoclassi di modificare il tipo di oggetti che verranno creati.  
-Nel nostro progetto utilizziamo questo pattern per la creazione dei messaggi relativi allo stato dell'operazione che si vuole compiere, se questa va a buon fine verrà segnalato un successo, altrimenti un errore.
+Nel nostro progetto abbiamo utilizzato questo pattern per generare diverse classi di errori e messaggi di stato in base alle esigenze.  
+Il pattern permette, dunque, di rimpiazzare la creazione diretta degli oggetti delle classi di interesse con una più generica chiamata al factory method. Il factory method instanzierà l'oggetto corretto in base all'argomento che riceverà in input. Il vantaggio principale consiste nel poter fare l'override del factory method nelle sotto-classi in modo da specializzarne il comportamento.
 
 ### Singleton
 Il **singleton** è un design pattern creazionale che ha lo scopo di garantire che di una determinata classe venga creata una e una sola istanza, e di fornire un punto di accesso globale a tale istanza.  
-Nel nostro progetto lo utilizziamo per effettuare la connesione al database, in maniera tale che di essa vi sia una sola istanza così da non consumare inutilmente risorse computazionali.
+L'uso più comune di tale pattern è quando si vuole garantire e, allo stesso tempo, controllare l'accesso ad una risorsa condivisa, come ad esempio una connessione oppure un file. 
+Nel nostro progetto viene utilizzato per generare la connesione al database. Difatti, non appena una porzione di codice vorrà accedere al database, verrà istanziato il singleton. Tuttavia, non appena succesive chiamate tenteranno di accedere nuovamente al database, invece che instanziare una nuova connessione verrà resituita al chiamante l'istanza del singleton già creata. Ciò permette di rispamiare risorse computazionali, dato che mantenere attive delle connessioni inutilmente è "costoso".
 
-### Chain Of Responsability & Middleware
+### Chain Of Responsibility
 La **catena di responsabilità** è un pattern comportamentale che consente di passare le richieste lungo una catena di gestori. Alla ricezione di una richiesta, ciascun handler decide di elaborare la richiesta o di passarla al successivo handler della catena.  
 È molto simile ad un decoratore ma a differenza di quest’ultimo, la catena di responsabilità può essere interrotta.  
 La Catena di Responsabilità è formata da degli handler (funzioni o metodi), che hanno lo scopo di verificare se quello che gli viene passato soddisfa o meno dei criteri. Se il criterio è soddisfatto, non si ritorna, come avveniva nel Proxy, ma si va avanti passando il controllo all’handler successivo.  
-Le funzioni **middleware** sono funzioni che hanno accesso all'oggetto richiesta (req), all'oggetto risposta (res) e alla successiva funzione **middleware** nel ciclo richiesta-risposta dell'applicazione. La funzione **middleware** successiva è comunemente indicata da una variabile denominata next.  
-Nel progetto utilizziamo la **catena di responsabilità** insieme al **middleware** per verificare che per ciascuna delle operazioni che si vogliono compiere siano rispettati tutti i requisiti, se così non fosse il **middleware** che non viene rispettato segnalerà l'errore opportuno.
+Le funzioni middleware sono funzioni che hanno accesso all'oggetto richiesta (req), all'oggetto risposta (res) e alla successiva funzione middleware nel ciclo richiesta-risposta dell'applicazione. La funzione middleware successiva è comunemente indicata da una variabile denominata next.  
+Nel progetto utilizziamo la catena di responsabilità insieme al middleware per verificare che per ciascuna delle operazioni che si vogliono compiere siano rispettati tutti i requisiti, se così non fosse il middleware che non viene rispettato segnalerà l'errore opportuno.
 
-## Come avviare il progetto
-Per poter eseguire il progetto è necessario aver installato **Docker**.
+## Avviare il progetto:
+Il progetto può essere avviato usando **Docker**.
 
-Gli step sono i seguenti:
-1. Clonare repository,
-2. Avviare docker,
-3. All'interno della cartella, digitare: *docker compose up* (Attendere che l'esecuzione sia completata),
-4. Il programma è in esecuzione.
+Steps:
+1. Clonare repository
+2. Posizionarsi nella directory del repository appena clonato
+3. Digitare ```docker compose up```
+4. Il programma è in esecuzione nel container docker.
 
 ## Testing
-Si può testare il progetto eseguendo una serie di test predefiniti, per fare ciò occorre importare all'interno di Postman la collection *Battleship.postman_collection* che si trova in questo repository.   
-I token **JWT**, sono stati generati, utilizzando JWT.IO, tramite la chiave 'secretkey'.  
-**Essendo il seed valorizzato solamente per gli utenti è suggerito seguire l'ordine delle chiamate così come sono ordinate nella collection.**  
+Si può testare il progetto eseguendo una serie di test predefiniti, per fare ciò occorre importare all'interno di Postman le due collection presenti nella cartella **postman_collections** all'interno di questo repository.   
+I token **JWT**, sono stati generati, utilizzando JWT.IO, tramite la chiave ```secretkey```.  
 
 ## Autori
 #### Agostinelli Luca
