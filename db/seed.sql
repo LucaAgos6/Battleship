@@ -16,17 +16,17 @@ SET xmloption = content;
 SET client_min_messages = warning;
 SET row_security = off;
 
-DROP DATABASE "Battleship";
+--DROP DATABASE IF EXISTS battleship;
 --
 -- Name: Battleship; Type: DATABASE; Schema: -; Owner: postgres
 --
 
-CREATE DATABASE "Battleship" WITH TEMPLATE = template0 ENCODING = 'UTF8' LOCALE_PROVIDER = libc LOCALE = 'Italian_Italy.1252';
+CREATE DATABASE battleship;
 
 
-ALTER DATABASE "Battleship" OWNER TO postgres;
+ALTER DATABASE battleship OWNER TO postgres;
 
-\connect "Battleship"
+\connect battleship
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
