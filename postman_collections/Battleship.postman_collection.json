@@ -1,0 +1,422 @@
+{
+	"info": {
+		"_postman_id": "b0351e98-c4cf-46d5-9247-9378e1855415",
+		"name": "Battleship",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "24068373"
+	},
+	"item": [
+		{
+			"name": "refill jwt: admin",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQG1haWwuaXQifQ.wNGxYZu9yQXWER-FNtXoj_Y6V8AQTDp0mrAEJPcT7U8",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"email\": \"user1@mail.it\",\r\n    \"token\": 50\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:3000/refill",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"refill"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "begin-match jwt: admin",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQG1haWwuaXQifQ.wNGxYZu9yQXWER-FNtXoj_Y6V8AQTDp0mrAEJPcT7U8",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"player2\": \"user1@mail.it\",\r\n    \"gridDim\": 5,\r\n    \"shipsConfig\": {\r\n        \"A\": 0,\r\n        \"B\": 0,\r\n        \"C\": 0,\r\n        \"D\": 1\r\n    },\r\n    \"shipDims\": {\r\n        \"A\": 4,\r\n        \"B\": 3,\r\n        \"C\": 2,\r\n        \"D\": 1\r\n    }\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:3000/begin-match",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"begin-match"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "begin-match jwt: user1",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InVzZXIxQG1haWwuaXQifQ.mpv6MixOo29sYVIBD0Cr5wjDuYcfdAh5hemEFcpNfgg",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"player2\": \"AI\",\r\n    \"gridDim\": 5,\r\n    \"shipsConfig\": {\r\n        \"A\": 1,\r\n        \"B\": 1,\r\n        \"C\": 1,\r\n        \"D\": 1\r\n    },\r\n    \"shipDims\": {\r\n        \"A\": 4,\r\n        \"B\": 3,\r\n        \"C\": 2,\r\n        \"D\": 1\r\n    }\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:3000/begin-match",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"begin-match"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "make-move jwt: admin",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQG1haWwuaXQifQ.wNGxYZu9yQXWER-FNtXoj_Y6V8AQTDp0mrAEJPcT7U8",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"id\": 51,\r\n    \"move\": {\r\n        \"player\": \"admin@mail.it\",\r\n        \"row\": 2,\r\n        \"col\": 4\r\n    }\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:3000/make-move",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"make-move"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "make-move jwt: user1",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InVzZXIxQG1haWwuaXQifQ.mpv6MixOo29sYVIBD0Cr5wjDuYcfdAh5hemEFcpNfgg",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"id\": 43,\r\n    \"move\": {\r\n        \"player\": \"user1@mail.it\",\r\n        \"row\": 0,\r\n        \"col\": 3\r\n    }\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:3000/make-move",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"make-move"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "make-move jwt: user2",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InVzZXIyQG1haWwuaXQifQ.cGYsP_VNCtSxESLNmN2vyw2ixpdzLR2TFmR6zqVQEgg",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"id\": 41,\r\n    \"move\": {\r\n        \"player\": \"user2@mail.it\",\r\n        \"row\": 3,\r\n        \"col\": 4\r\n    }\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:3000/make-move",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"make-move"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "game-state jwt: user1",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InVzZXIxQG1haWwuaXQifQ.mpv6MixOo29sYVIBD0Cr5wjDuYcfdAh5hemEFcpNfgg",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"id\": 41\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:3000/game-state",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"game-state"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "game-log jwt: user1",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InVzZXIxQG1haWwuaXQifQ.mpv6MixOo29sYVIBD0Cr5wjDuYcfdAh5hemEFcpNfgg",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"id\": 41,\r\n    \"path\": \"/usr/src/app\",\r\n    \"format\": \"csv\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:3000/game-log",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"game-log"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "user-stats jwt: admin",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQG1haWwuaXQifQ.wNGxYZu9yQXWER-FNtXoj_Y6V8AQTDp0mrAEJPcT7U8",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"start_date\": \"2022-11-04\", \r\n    \"end_date\": \"2022-11-10\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:3000/user-stats",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"user-stats"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "user-stats jwt: user1",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InVzZXIxQG1haWwuaXQifQ.mpv6MixOo29sYVIBD0Cr5wjDuYcfdAh5hemEFcpNfgg",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"start_date\": \"2022-11-06\", \r\n    \"end_date\": \"2022-11-10\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:3000/user-stats",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"user-stats"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "leaderboard",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"sort\": \"desc\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:3000/leaderboard",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"leaderboard"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
