@@ -357,7 +357,7 @@ Controller->>Client: res.send()
 ```
 
 ## Mostra il log delle mosse di una data partita (/game-log)
-Mediante l'utilizzo di questa rotta si può vedere il log di una data partita. Questa rotta può essere richiamata solamente dagli utenti autenticati. Inoltre, è data la possibilità di esportare il log delle mosse in formato JSON o CSV ed il relativo path dove verrà salvato il file. Se non si vuole esportare il log delle mosse basta lasciare vuoti il campo "path" oppure "format".
+Mediante l'utilizzo di questa rotta si può vedere il log di una data partita. Questa rotta può essere richiamata solamente dagli utenti autenticati. Inoltre, è data la possibilità di esportare il log delle mosse in formato JSON o CSV ed il relativo path dove verrà salvato il file. Se non si vuole esportare il log delle mosse basta lasciare vuoto il campo "format".
 
 Da effettuare tramite token JWT che deve contenere un payload JSON con la seguente struttura:
 * Export in CSV
