@@ -388,6 +388,7 @@ export async function getLog(id: string, exportPath: string, format: string, res
     let game: any;
     let logMoves: any;
     let filename: string;
+    let msg: string = "File not exported"
 
     game = await Game.findByPk(id, { raw: true });
 
@@ -396,16 +397,18 @@ export async function getLog(id: string, exportPath: string, format: string, res
             filename = 'Game-' + id + '_log.json';
             exportPath = path.join(exportPath, filename)
             Utils.exportAsJSON(game.log_moves, exportPath);
+            msg = "File JSON exported at :" + exportPath;
         }
         else if (format === 'csv' || format === 'CSV') {
             filename = 'Game-' + id + '_log.csv';
             exportPath = path.join(exportPath, filename)
             Utils.exportAsCSV(game.log_moves, exportPath);
+            msg = "File CSV exported at :" + exportPath;
         }
     }
     logMoves = {
         status: 200,
-        msg: "File exported at :" + exportPath,
+        msg: msg,
         id: game.id,
         log_moves: game.log_moves.moves
     };
