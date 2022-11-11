@@ -16,6 +16,29 @@ SET xmloption = content;
 SET client_min_messages = warning;
 SET row_security = off;
 
+DROP DATABASE "Battleship";
+--
+-- Name: Battleship; Type: DATABASE; Schema: -; Owner: postgres
+--
+
+CREATE DATABASE "Battleship" WITH TEMPLATE = template0 ENCODING = 'UTF8' LOCALE_PROVIDER = libc LOCALE = 'Italian_Italy.1252';
+
+
+ALTER DATABASE "Battleship" OWNER TO postgres;
+
+\connect "Battleship"
+
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET idle_in_transaction_session_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SELECT pg_catalog.set_config('search_path', '', false);
+SET check_function_bodies = false;
+SET xmloption = content;
+SET client_min_messages = warning;
+SET row_security = off;
+
 SET default_tablespace = '';
 
 SET default_table_access_method = heap;
@@ -114,6 +137,7 @@ ALTER TABLE ONLY public.game ALTER COLUMN id SET DEFAULT nextval('public.game_id
 
 COPY public.game (id, player1, player2, game_status, player_turn, winner, loser, grid_dim, grids, log_moves, game_date) FROM stdin;
 10	admin@mail.it	user1@mail.it	closed	admin@mail.it	user1@mail.it	admin@mail.it	5	{"grid1":[["W","W","W","W","D1"],["W","W","W","W","W"],["W","O","W","W","W"],["W","O","W","W","W"],["W","W","W","W","W"]],"grid2":[["W","W","W","X","O"],["W","W","W","W","W"],["W","W","W","W","W"],["W","W","W","W","W"],["W","W","W","W","W"]],"init_grid1":[["W","W","W","W","D1"],["W","W","W","W","W"],["W","W","W","W","W"],["W","W","W","W","W"],["W","W","W","W","W"]],"init_grid2":[["W","W","W","D1","W"],["W","W","W","W","W"],["W","W","W","W","W"],["W","W","W","W","W"],["W","W","W","W","W"]]}	{"moves":[{"player":"admin@mail.it","row":2,"col":1},{"player":"user1@mail.it","row":0,"col":4},{"player":"admin@mail.it","row":3,"col":1},{"player":"user1@mail.it","row":0,"col":3}]}	2022-11-05
+52	user1@mail.it	user3@mail.it	closed	user1@mail.it	user3@mail.it	user1@mail.it	5	{"grid1":[["W","W","W","W","W"],["W","W","W","W","X"],["W","W","W","W","W"],["W","W","W","W","O"],["W","W","W","W","W"]],"grid2":[["W","W","W","O","W"],["W","D1","W","W","O"],["W","W","W","W","W"],["W","W","W","W","W"],["W","W","W","W","W"]],"init_grid1":[["W","W","W","W","W"],["W","W","W","W","D1"],["W","W","W","W","W"],["W","W","W","W","W"],["W","W","W","W","W"]],"init_grid2":[["W","W","W","W","W"],["W","D1","W","W","W"],["W","W","W","W","W"],["W","W","W","W","W"],["W","W","W","W","W"]]}	{"moves":[{"player":"user1@mail.it","row":0,"col":3},{"player":"user2@mail.it","row":3,"col":4},{"player":"user1@mail.it","row":1,"col":4},{"player":"user2@mail.it","row":1,"col":4}]}	2022-11-11
 40	user4@mail.it	user5@mail.it	in progress	user5@mail.it	\N	\N	5	{"grid1":[["W","W","W","W","W"],["W","W","W","W","W"],["W","W","W","W","W"],["W","W","W","W","W"],["D1","W","W","W","W"]],"grid2":[["W","W","W","W","W"],["O","W","W","W","W"],["W","D1","W","W","W"],["W","W","W","W","W"],["W","W","W","W","W"]],"init_grid1":[["W","W","W","W","W"],["W","W","W","W","W"],["W","W","W","W","W"],["W","W","W","W","W"],["D1","W","W","W","W"]],"init_grid2":[["W","W","W","W","W"],["W","W","W","W","W"],["W","D1","W","W","W"],["W","W","W","W","W"],["W","W","W","W","W"]]}	{"moves":[{"player":"admin@mail.it","row":1,"col":0}]}	2022-11-05
 41	user1@mail.it	user2@mail.it	closed	user1@mail.it	user2@mail.it	user1@mail.it	5	{"grid1":[["X","X","O","W","W"],["W","W","W","W","X"],["W","X","X","X","X"],["W","W","X","X","X"],["W","W","W","W","W"]],"grid2":[["X","X","X","O","O"],["W","X","X","X","X"],["W","W","W","W","W"],["W","O","W","W","X"],["W","W","C1","C1","W"]],"init_grid1":[["C1","C1","W","W","W"],["W","W","W","W","D1"],["W","A1","A1","A1","A1"],["W","W","B1","B1","B1"],["W","W","W","W","W"]],"init_grid2":[["B1","B1","B1","W","W"],["W","A1","A1","A1","A1"],["W","W","W","W","W"],["W","W","W","W","D1"],["W","W","C1","C1","W"]]}	{"moves":[{"player":"user1@mail.it","row":0,"col":0},{"player":"user2@mail.it","row":0,"col":0},{"player":"user1@mail.it","row":0,"col":1},{"player":"user2@mail.it","row":0,"col":1},{"player":"user1@mail.it","row":0,"col":2},{"player":"user2@mail.it","row":0,"col":2},{"player":"user1@mail.it","row":0,"col":3},{"player":"user2@mail.it","row":1,"col":4},{"player":"user1@mail.it","row":0,"col":4},{"player":"user2@mail.it","row":2,"col":1},{"player":"user1@mail.it","row":1,"col":4},{"player":"user2@mail.it","row":2,"col":2},{"player":"user1@mail.it","row":1,"col":3},{"player":"user2@mail.it","row":2,"col":3},{"player":"user1@mail.it","row":1,"col":2},{"player":"user2@mail.it","row":2,"col":4},{"player":"user1@mail.it","row":1,"col":1},{"player":"user2@mail.it","row":3,"col":2},{"player":"user1@mail.it","row":3,"col":1},{"player":"user2@mail.it","row":3,"col":3},{"player":"user1@mail.it","row":3,"col":4},{"player":"user2@mail.it","row":3,"col":4}]}	2022-11-06
 42	user1@mail.it	AI	closed	AI	user1@mail.it	AI	5	{"grid1":[["X","O","O","X","X"],["O","B1","O","X","C1"],["O","B1","W","X","O"],["W","X","W","A1","W"],["O","O","O","W","O"]],"grid2":[["W","O","O","O","X"],["O","W","O","X","X"],["X","X","X","O","W"],["X","X","X","X","O"],["W","W","W","W","W"]],"init_grid1":[["D1","W","W","A1","C1"],["W","B1","W","A1","C1"],["W","B1","W","A1","W"],["W","B1","W","A1","W"],["W","W","W","W","W"]],"init_grid2":[["W","W","W","W","C1"],["W","W","W","D1","C1"],["B1","B1","B1","W","W"],["A1","A1","A1","A1","W"],["W","W","W","W","W"]]}	{"moves":[{"player":"user1@mail.it","row":0,"col":1},{"player":"AI","row":4,"col":1},{"player":"user1@mail.it","row":1,"col":0},{"player":"AI","row":4,"col":4},{"player":"user1@mail.it","row":1,"col":3},{"player":"AI","row":0,"col":4},{"player":"user1@mail.it","row":0,"col":4},{"player":"AI","row":0,"col":3},{"player":"user1@mail.it","row":1,"col":4},{"player":"AI","row":2,"col":0},{"player":"user1@mail.it","row":1,"col":2},{"player":"AI","row":1,"col":3},{"player":"user1@mail.it","row":2,"col":1},{"player":"AI","row":2,"col":4},{"player":"user1@mail.it","row":3,"col":1},{"player":"AI","row":0,"col":2},{"player":"user1@mail.it","row":3,"col":2},{"player":"AI","row":1,"col":0},{"player":"user1@mail.it","row":3,"col":3},{"player":"AI","row":1,"col":2},{"player":"user1@mail.it","row":3,"col":4},{"player":"AI","row":3,"col":1},{"player":"user1@mail.it","row":3,"col":0},{"player":"AI","row":4,"col":0},{"player":"user1@mail.it","row":2,"col":2},{"player":"AI","row":4,"col":2},{"player":"user1@mail.it","row":2,"col":3},{"player":"AI","row":0,"col":0},{"player":"user1@mail.it","row":0,"col":3},{"player":"AI","row":0,"col":1},{"player":"user1@mail.it","row":0,"col":2},{"player":"AI","row":2,"col":3},{"player":"user1@mail.it","row":2,"col":0}]}	2022-11-06
@@ -130,7 +154,8 @@ COPY public.leaderboard (email, total_matches, wins, losses, win_ratio) FROM std
 user2@mail.it	1	1	0	1
 AI	2	0	2	0
 admin@mail.it	2	1	1	0.5
-user1@mail.it	5	3	2	0.6
+user3@mail.it	1	1	0	1
+user1@mail.it	6	3	3	0.5
 \.
 
 
@@ -140,11 +165,11 @@ user1@mail.it	5	3	2	0.6
 
 COPY public.users (email, role, token) FROM stdin;
 user6@mail.it	user	0
-user1@mail.it	user	46.74
 admin@mail.it	admin	48.39
+user1@mail.it	user	49.58
+user3@mail.it	user	49.98
 user2@mail.it	user	49.89
 AI	user	0
-user3@mail.it	user	50
 user4@mail.it	user	50
 user5@mail.it	user	50
 \.
@@ -154,7 +179,7 @@ user5@mail.it	user	50
 -- Name: game_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.game_id_seq', 51, true);
+SELECT pg_catalog.setval('public.game_id_seq', 52, true);
 
 
 --
